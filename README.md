@@ -100,9 +100,6 @@ docker run -it \
 Once inside the container, run:
 
 ```bash
-# Navigate to the ROS workspace
-cd /home/ros_dev/BFMC_workspace/files/ros
-
 # Execute the simulation script
 ./sim.sh
 ```
@@ -259,21 +256,4 @@ colcon build --symlink-install
 # Make sure environment is sourced
 source install/setup.bash
 ```
-
-## 📚 Learning Resources
-
-- [ROS 2 Documentation](https://docs.ros.org/en/humble/)
-- [Gazebo Sim Documentation](https://gazebosim.org/docs)
-- [BFMC Challenge](https://www.bosch-future-mobility-challenge.com/)
-
-## 💡 Tips for Beginners
-
-1. **Start with existing code:** The `car_brain` package contains the main vehicle control logic.
-2. **Test incrementally:** Build and test your changes in small steps.
-3. **Use ROS debugging:** Familiarize yourself with `ros2 topic echo` and `rqt_graph`.
-4. **Monitor system resources:** Watch CPU/GPU usage as Gazebo can be resource-intensive.
-5. **Keep backups:** Version control is your friend—commit often!
-
----
-
 **Happy simulating! 🚗**
