@@ -1,0 +1,348 @@
+[0.000000] (-) TimerEvent: {}
+[0.000126] (car_brain) JobQueued: {'identifier': 'car_brain', 'dependencies': OrderedDict()}
+[0.000169] (traffic_light_plugin) JobQueued: {'identifier': 'traffic_light_plugin', 'dependencies': OrderedDict()}
+[0.000249] (car_brain) JobStarted: {'identifier': 'car_brain'}
+[0.005472] (traffic_light_plugin) JobStarted: {'identifier': 'traffic_light_plugin'}
+[0.099404] (-) TimerEvent: {}
+[0.138197] (traffic_light_plugin) JobProgress: {'identifier': 'traffic_light_plugin', 'progress': 'cmake'}
+[0.138532] (traffic_light_plugin) Command: {'cmd': ['/usr/bin/cmake', '/root/BFMC_workspace/files/ros/src/traffic_light_plugin', '-DCMAKE_INSTALL_PREFIX=/root/BFMC_workspace/files/ros/install/traffic_light_plugin'], 'cwd': '/root/BFMC_workspace/files/ros/build/traffic_light_plugin', 'env': OrderedDict([('HOSTNAME', '484b0266f701'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/BFMC_workspace/files/ros/src/car_brain'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/root/BFMC_workspace/files/ros/src/car_brain/install:/root/BFMC_workspace/files/ros/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('QT_X11_NO_MITSHM', '1'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('XDG_RUNTIME_DIR', '/tmp/xdg'), ('DISPLAY', ':1'), ('LANG', 'C.UTF-8'), ('XAUTHORITY', '/run/user/1000/xauth_QaldMj'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/root/BFMC_workspace/files/ros/install/traffic_light_plugin:/root/BFMC_workspace/files/ros/install/my_robot_controller:/opt/ros/humble'), ('IGN_GAZEBO_RESOURCE_PATH', ':/root/BFMC_workspace/simulation/models_pkg'), ('PWD', '/root/BFMC_workspace/files/ros/build/traffic_light_plugin'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/root/BFMC_workspace/files/ros/install/my_robot_controller/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/root/BFMC_workspace/files/ros/install/traffic_light_plugin:/root/BFMC_workspace/files/ros/install/my_robot_controller:/opt/ros/humble')]), 'shell': False}
+[0.199527] (-) TimerEvent: {}
+[0.226804] (traffic_light_plugin) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[0.271300] (traffic_light_plugin) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[0.277239] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.299613] (-) TimerEvent: {}
+[0.311512] (car_brain) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/car_brain', 'build', '--build-base', '/root/BFMC_workspace/files/ros/build/car_brain/build', 'install', '--record', '/root/BFMC_workspace/files/ros/build/car_brain/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/root/BFMC_workspace/files/ros/src/car_brain', 'env': {'HOSTNAME': '484b0266f701', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/root', 'OLDPWD': '/root/BFMC_workspace/files/ros/src/car_brain', 'ROS_PYTHON_VERSION': '3', 'COLCON_PREFIX_PATH': '/root/BFMC_workspace/files/ros/src/car_brain/install:/root/BFMC_workspace/files/ros/install', 'ROS_DISTRO': 'humble', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'ROS_LOCALHOST_ONLY': '0', 'QT_X11_NO_MITSHM': '1', 'PATH': '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'XDG_RUNTIME_DIR': '/tmp/xdg', 'DISPLAY': ':1', 'LANG': 'C.UTF-8', 'XAUTHORITY': '/run/user/1000/xauth_QaldMj', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'AMENT_PREFIX_PATH': '/root/BFMC_workspace/files/ros/install/traffic_light_plugin:/root/BFMC_workspace/files/ros/install/my_robot_controller:/opt/ros/humble', 'IGN_GAZEBO_RESOURCE_PATH': ':/root/BFMC_workspace/simulation/models_pkg', 'PWD': '/root/BFMC_workspace/files/ros/build/car_brain', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/root/BFMC_workspace/files/ros/build/car_brain/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages:/root/BFMC_workspace/files/ros/install/my_robot_controller/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/root/BFMC_workspace/files/ros/install/traffic_light_plugin'}, 'shell': False}
+[0.333209] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.337829] (traffic_light_plugin) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.337996] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.338238] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.340164] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.399700] (-) TimerEvent: {}
+[0.400555] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.405459] (traffic_light_plugin) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.405630] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.405904] (traffic_light_plugin) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.408572] (traffic_light_plugin) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.426421] (car_brain) StdoutLine: {'line': b'running egg_info\n'}
+[0.426767] (car_brain) StdoutLine: {'line': b'creating ../../build/car_brain/car_brain.egg-info\n'}
+[0.426879] (car_brain) StdoutLine: {'line': b'writing ../../build/car_brain/car_brain.egg-info/PKG-INFO\n'}
+[0.427025] (car_brain) StdoutLine: {'line': b'writing dependency_links to ../../build/car_brain/car_brain.egg-info/dependency_links.txt\n'}
+[0.427129] (car_brain) StdoutLine: {'line': b'writing entry points to ../../build/car_brain/car_brain.egg-info/entry_points.txt\n'}
+[0.427228] (car_brain) StdoutLine: {'line': b'writing requirements to ../../build/car_brain/car_brain.egg-info/requires.txt\n'}
+[0.427291] (car_brain) StdoutLine: {'line': b'writing top-level names to ../../build/car_brain/car_brain.egg-info/top_level.txt\n'}
+[0.427381] (car_brain) StdoutLine: {'line': b"writing manifest file '../../build/car_brain/car_brain.egg-info/SOURCES.txt'\n"}
+[0.428114] (car_brain) StdoutLine: {'line': b"reading manifest file '../../build/car_brain/car_brain.egg-info/SOURCES.txt'\n"}
+[0.428518] (car_brain) StdoutLine: {'line': b"writing manifest file '../../build/car_brain/car_brain.egg-info/SOURCES.txt'\n"}
+[0.428624] (car_brain) StdoutLine: {'line': b'running build\n'}
+[0.428708] (car_brain) StdoutLine: {'line': b'running build_py\n'}
+[0.428794] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/build/car_brain/build\n'}
+[0.428852] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/build/car_brain/build/lib\n'}
+[0.428917] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain\n'}
+[0.428970] (car_brain) StdoutLine: {'line': b'copying car_brain/__init__.py -> /root/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain\n'}
+[0.429021] (car_brain) StdoutLine: {'line': b'running install\n'}
+[0.429135] (car_brain) StdoutLine: {'line': b'running install_lib\n'}
+[0.429635] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain\n'}
+[0.429732] (car_brain) StdoutLine: {'line': b'copying /root/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain/__init__.py -> /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain\n'}
+[0.430028] (car_brain) StdoutLine: {'line': b'byte-compiling /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain/__init__.py to __init__.cpython-310.pyc\n'}
+[0.430184] (car_brain) StdoutLine: {'line': b'running install_data\n'}
+[0.430288] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index\n'}
+[0.430353] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index\n'}
+[0.430438] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index/packages\n'}
+[0.430494] (car_brain) StdoutLine: {'line': b'copying resource/car_brain -> /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index/packages\n'}
+[0.430562] (car_brain) StdoutLine: {'line': b'copying package.xml -> /root/BFMC_workspace/files/ros/install/car_brain/share/car_brain\n'}
+[0.430631] (car_brain) StdoutLine: {'line': b'creating /root/BFMC_workspace/files/ros/install/car_brain/share/car_brain/launch\n'}
+[0.430710] (car_brain) StdoutLine: {'line': b'copying launch/sim_launch.py -> /root/BFMC_workspace/files/ros/install/car_brain/share/car_brain/launch\n'}
+[0.430765] (car_brain) StdoutLine: {'line': b'running install_egg_info\n'}
+[0.431776] (car_brain) StdoutLine: {'line': b'Copying ../../build/car_brain/car_brain.egg-info to /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain-0.0.0-py3.10.egg-info\n'}
+[0.432287] (car_brain) StdoutLine: {'line': b'running install_scripts\n'}
+[0.444361] (car_brain) StdoutLine: {'line': b"writing list of installed files to '/root/BFMC_workspace/files/ros/build/car_brain/install.log'\n"}
+[0.460051] (car_brain) CommandEnded: {'returncode': 0}
+[0.466015] (car_brain) JobEnded: {'identifier': 'car_brain', 'rc': 0}
+[0.499775] (-) TimerEvent: {}
+[0.509979] (traffic_light_plugin) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[0.574267] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-gazebo6 -- found version 6.16.0\n'}
+[0.578535] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-gazebo6\n'}
+[0.580190] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for sdformat12 -- found version 12.7.2\n'}
+[0.580373] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of sdformat12\n'}
+[0.583656] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'tinyxml2'\n"}
+[0.595850] (traffic_light_plugin) StdoutLine: {'line': b'--   Found tinyxml2, version 9.0.0\n'}
+[0.599878] (-) TimerEvent: {}
+[0.627222] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[0.627470] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-math6\n'}
+[0.629340] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[0.629569] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-utils1\n'}
+[0.632065] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[0.632312] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1\n'}
+[0.632549] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-plugin1> component [loader]\n'}
+[0.634137] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1-loader -- found version 1.4.0\n'}
+[0.634383] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1-loader\n'}
+[0.634634] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-plugin1> component [register]\n'}
+[0.636303] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1-register -- found version 1.4.0\n'}
+[0.636578] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1-register\n'}
+[0.638614] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-transport11 -- found version 11.4.1\n'}
+[0.638841] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-transport11\n'}
+[0.699991] (-) TimerEvent: {}
+[0.781603] (traffic_light_plugin) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so (found version "3.12.4") \n'}
+[0.790819] (traffic_light_plugin) StdoutLine: {'line': b'-- Config-file not installed for ZeroMQ -- checking for pkg-config\n'}
+[0.794036] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'libzmq >= 4'\n"}
+[0.800066] (-) TimerEvent: {}
+[0.806810] (traffic_light_plugin) StdoutLine: {'line': b'--   Found libzmq , version 4.3.4\n'}
+[0.840003] (traffic_light_plugin) StdoutLine: {'line': b'-- Found ZeroMQ: TRUE (Required is at least version "4") \n'}
+[0.845520] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'uuid'\n"}
+[0.856508] (traffic_light_plugin) StdoutLine: {'line': b'--   Found uuid, version 2.37.2\n'}
+[0.884930] (traffic_light_plugin) StdoutLine: {'line': b'-- Found UUID: TRUE  \n'}
+[0.885174] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[0.885447] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-utils1\n'}
+[0.885546] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-utils1> component [cli]\n'}
+[0.887277] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-utils1-cli -- found version 1.5.1\n'}
+[0.887540] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-utils1-cli\n'}
+[0.889490] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[0.889733] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-msgs8\n'}
+[0.900137] (-) TimerEvent: {}
+[0.904105] (traffic_light_plugin) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so (found suitable version "3.12.4", minimum required is "3") \n'}
+[0.904614] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[0.913630] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-transport11> component [log]\n'}
+[0.915317] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-transport11-log -- found version 11.4.1\n'}
+[0.915639] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-transport11-log\n'}
+[0.915925] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-transport11> component [parameters]\n'}
+[0.917842] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-transport11-parameters -- found version 11.4.1\n'}
+[0.918102] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-transport11-parameters\n'}
+[0.918724] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[0.920549] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[0.920812] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4\n'}
+[0.921000] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for dlfcn.h - found\n'}
+[0.921341] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for libdl - found\n'}
+[0.922254] (traffic_light_plugin) StdoutLine: {'line': b'-- Found DL: TRUE  \n'}
+[0.927865] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [profiler]\n'}
+[0.929733] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4-profiler -- found version 4.7.0\n'}
+[0.930425] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-profiler\n'}
+[0.931060] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [events]\n'}
+[0.932875] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4-events -- found version 4.7.0\n'}
+[0.933140] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-events\n'}
+[0.933348] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[0.933636] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [av]\n'}
+[0.935870] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4-av -- found version 4.7.0\n'}
+[0.936141] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-av\n'}
+[0.940372] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'libswscale'\n"}
+[0.953378] (traffic_light_plugin) StdoutLine: {'line': b'--   Found libswscale, version 5.9.100\n'}
+[0.982475] (traffic_light_plugin) StdoutLine: {'line': b'-- Found SWSCALE: TRUE  \n'}
+[0.987267] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'libavdevice >= 56.4.100'\n"}
+[0.997195] (traffic_light_plugin) StdoutLine: {'line': b'--   Found libavdevice , version 58.13.100\n'}
+[1.000220] (-) TimerEvent: {}
+[1.028216] (traffic_light_plugin) StdoutLine: {'line': b'-- Found AVDEVICE: TRUE (Required is at least version "56.4.100") \n'}
+[1.032900] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'libavformat'\n"}
+[1.042521] (traffic_light_plugin) StdoutLine: {'line': b'--   Found libavformat, version 58.76.100\n'}
+[1.071710] (traffic_light_plugin) StdoutLine: {'line': b'-- Found AVFORMAT: TRUE  \n'}
+[1.076503] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'libavcodec'\n"}
+[1.087418] (traffic_light_plugin) StdoutLine: {'line': b'--   Found libavcodec, version 58.134.100\n'}
+[1.100319] (-) TimerEvent: {}
+[1.116660] (traffic_light_plugin) StdoutLine: {'line': b'-- Found AVCODEC: TRUE  \n'}
+[1.121126] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'libavutil'\n"}
+[1.132037] (traffic_light_plugin) StdoutLine: {'line': b'--   Found libavutil, version 56.70.100\n'}
+[1.160463] (traffic_light_plugin) StdoutLine: {'line': b'-- Found AVUTIL: TRUE  \n'}
+[1.162870] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-fuel_tools7 -- found version 7.3.0\n'}
+[1.163173] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-fuel_tools7\n'}
+[1.200431] (-) TimerEvent: {}
+[1.227339] (traffic_light_plugin) StdoutLine: {'line': b'-- Found CURL: /usr/lib/x86_64-linux-gnu/libcurl.so (found version "7.81.0")  \n'}
+[1.235533] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'jsoncpp'\n"}
+[1.247591] (traffic_light_plugin) StdoutLine: {'line': b'--   Found jsoncpp, version 1.9.5\n'}
+[1.279982] (traffic_light_plugin) StdoutLine: {'line': b'-- Found JSONCPP: TRUE  \n'}
+[1.285326] (traffic_light_plugin) StdoutLine: {'line': b"-- Checking for module 'libzip'\n"}
+[1.297983] (traffic_light_plugin) StdoutLine: {'line': b'--   Found libzip, version 1.7.3\n'}
+[1.300505] (-) TimerEvent: {}
+[1.327955] (traffic_light_plugin) StdoutLine: {'line': b'-- Found ZIP: TRUE  \n'}
+[1.328206] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.328443] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.328684] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.331156] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-gui6 -- found version 6.8.0\n'}
+[1.331430] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-gui6\n'}
+[1.353334] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.354016] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.354655] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.355040] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-transport11 -- found version 11.4.1\n'}
+[1.357215] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-rendering6 -- found version 6.6.3\n'}
+[1.357579] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-rendering6\n'}
+[1.357815] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.358072] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-math6\n'}
+[1.358139] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-math6> component [eigen3]\n'}
+[1.359849] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6-eigen3 -- found version 6.15.1\n'}
+[1.360117] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-math6-eigen3\n'}
+[1.366432] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.366670] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4\n'}
+[1.366813] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for dlfcn.h - found\n'}
+[1.366896] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for libdl - found\n'}
+[1.372918] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [graphics]\n'}
+[1.374665] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4-graphics -- found version 4.7.0\n'}
+[1.374990] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-graphics\n'}
+[1.375245] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.375499] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[1.375868] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [events]\n'}
+[1.376410] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.376670] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1\n'}
+[1.376763] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-plugin1> component [all]\n'}
+[1.378493] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for all libraries of ignition-plugin1 -- found version 1.4.0\n'}
+[1.378823] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.380093] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.395124] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-physics5 -- found version 5.3.2\n'}
+[1.395345] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5\n'}
+[1.395554] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.395791] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.396048] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[1.396804] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-physics5> component [heightmap]\n'}
+[1.398685] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-physics5-heightmap -- found version 5.3.2\n'}
+[1.398996] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5-heightmap\n'}
+[1.399193] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.399460] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-physics5> component [mesh]\n'}
+[1.400561] (-) TimerEvent: {}
+[1.401191] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-physics5-mesh -- found version 5.3.2\n'}
+[1.401459] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5-mesh\n'}
+[1.401656] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.401910] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-physics5> component [sdf]\n'}
+[1.403701] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-physics5-sdf -- found version 5.3.2\n'}
+[1.403997] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5-sdf\n'}
+[1.404393] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for sdformat12 -- found version 12.7.2\n'}
+[1.406523] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.406773] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6\n'}
+[1.421545] (traffic_light_plugin) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so (found version "3.12.4") \n'}
+[1.422065] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.422300] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.422536] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-transport11 -- found version 11.4.1\n'}
+[1.422796] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-rendering6 -- found version 6.6.3\n'}
+[1.423060] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.423256] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for sdformat12 -- found version 12.7.2\n'}
+[1.423718] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [air_pressure]\n'}
+[1.425567] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-air_pressure -- found version 6.8.0\n'}
+[1.425889] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-air_pressure\n'}
+[1.426164] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [altimeter]\n'}
+[1.427792] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-altimeter -- found version 6.8.0\n'}
+[1.428077] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-altimeter\n'}
+[1.428355] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [imu]\n'}
+[1.429979] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-imu -- found version 6.8.0\n'}
+[1.430237] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-imu\n'}
+[1.430525] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [force_torque]\n'}
+[1.432230] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-force_torque -- found version 6.8.0\n'}
+[1.432487] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-force_torque\n'}
+[1.432768] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [logical_camera]\n'}
+[1.434835] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-logical_camera -- found version 6.8.0\n'}
+[1.435103] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-logical_camera\n'}
+[1.435410] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [magnetometer]\n'}
+[1.437265] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-magnetometer -- found version 6.8.0\n'}
+[1.437541] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-magnetometer\n'}
+[1.437860] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [navsat]\n'}
+[1.439599] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-navsat -- found version 6.8.0\n'}
+[1.439865] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-navsat\n'}
+[1.440147] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [rendering]\n'}
+[1.441769] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-rendering -- found version 6.8.0\n'}
+[1.442032] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-rendering\n'}
+[1.442317] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [lidar]\n'}
+[1.443984] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-lidar -- found version 6.8.0\n'}
+[1.444244] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-lidar\n'}
+[1.444462] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.444782] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [gpu_lidar]\n'}
+[1.446473] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-gpu_lidar -- found version 6.8.0\n'}
+[1.446742] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-gpu_lidar\n'}
+[1.446963] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.447272] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [camera]\n'}
+[1.448927] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-camera -- found version 6.8.0\n'}
+[1.449188] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-camera\n'}
+[1.449399] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.449774] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [boundingbox_camera]\n'}
+[1.451451] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-boundingbox_camera -- found version 6.8.0\n'}
+[1.451719] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-boundingbox_camera\n'}
+[1.452006] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [segmentation_camera]\n'}
+[1.453759] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-segmentation_camera -- found version 6.8.0\n'}
+[1.454018] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-segmentation_camera\n'}
+[1.454312] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [depth_camera]\n'}
+[1.456270] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-depth_camera -- found version 6.8.0\n'}
+[1.456536] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-depth_camera\n'}
+[1.456774] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.457111] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [rgbd_camera]\n'}
+[1.458825] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-rgbd_camera -- found version 6.8.0\n'}
+[1.459092] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-rgbd_camera\n'}
+[1.459315] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.459690] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [thermal_camera]\n'}
+[1.461334] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6-thermal_camera -- found version 6.8.0\n'}
+[1.461591] (traffic_light_plugin) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-thermal_camera\n'}
+[1.461807] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.462407] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-rendering6 -- found version 6.6.3\n'}
+[1.462646] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.464420] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[1.482896] (traffic_light_plugin) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.500659] (-) TimerEvent: {}
+[1.527040] (traffic_light_plugin) StdoutLine: {'line': b'-- Configuring done\n'}
+[1.535070] (traffic_light_plugin) StdoutLine: {'line': b'-- Generating done\n'}
+[1.537332] (traffic_light_plugin) StdoutLine: {'line': b'-- Build files have been written to: /root/BFMC_workspace/files/ros/build/traffic_light_plugin\n'}
+[1.548218] (traffic_light_plugin) CommandEnded: {'returncode': 0}
+[1.548715] (traffic_light_plugin) JobProgress: {'identifier': 'traffic_light_plugin', 'progress': 'build'}
+[1.549587] (traffic_light_plugin) Command: {'cmd': ['/usr/bin/cmake', '--build', '/root/BFMC_workspace/files/ros/build/traffic_light_plugin', '--', '-j16', '-l16'], 'cwd': '/root/BFMC_workspace/files/ros/build/traffic_light_plugin', 'env': OrderedDict([('HOSTNAME', '484b0266f701'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/BFMC_workspace/files/ros/src/car_brain'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/root/BFMC_workspace/files/ros/src/car_brain/install:/root/BFMC_workspace/files/ros/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('QT_X11_NO_MITSHM', '1'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('XDG_RUNTIME_DIR', '/tmp/xdg'), ('DISPLAY', ':1'), ('LANG', 'C.UTF-8'), ('XAUTHORITY', '/run/user/1000/xauth_QaldMj'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/root/BFMC_workspace/files/ros/install/traffic_light_plugin:/root/BFMC_workspace/files/ros/install/my_robot_controller:/opt/ros/humble'), ('IGN_GAZEBO_RESOURCE_PATH', ':/root/BFMC_workspace/simulation/models_pkg'), ('PWD', '/root/BFMC_workspace/files/ros/build/traffic_light_plugin'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/root/BFMC_workspace/files/ros/install/my_robot_controller/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/root/BFMC_workspace/files/ros/install/traffic_light_plugin:/root/BFMC_workspace/files/ros/install/my_robot_controller:/opt/ros/humble')]), 'shell': False}
+[1.589242] (traffic_light_plugin) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/TrafficLightPlugin.dir/src/TrafficLightPlugin.cpp.o\x1b[0m\n'}
+[1.600747] (-) TimerEvent: {}
+[1.701014] (-) TimerEvent: {}
+[1.801305] (-) TimerEvent: {}
+[1.901626] (-) TimerEvent: {}
+[2.002054] (-) TimerEvent: {}
+[2.102358] (-) TimerEvent: {}
+[2.202606] (-) TimerEvent: {}
+[2.302885] (-) TimerEvent: {}
+[2.403159] (-) TimerEvent: {}
+[2.503443] (-) TimerEvent: {}
+[2.603686] (-) TimerEvent: {}
+[2.703993] (-) TimerEvent: {}
+[2.804306] (-) TimerEvent: {}
+[2.904611] (-) TimerEvent: {}
+[3.004952] (-) TimerEvent: {}
+[3.105266] (-) TimerEvent: {}
+[3.205564] (-) TimerEvent: {}
+[3.305849] (-) TimerEvent: {}
+[3.406183] (-) TimerEvent: {}
+[3.506486] (-) TimerEvent: {}
+[3.606852] (-) TimerEvent: {}
+[3.707215] (-) TimerEvent: {}
+[3.807539] (-) TimerEvent: {}
+[3.907863] (-) TimerEvent: {}
+[4.008204] (-) TimerEvent: {}
+[4.108606] (-) TimerEvent: {}
+[4.208915] (-) TimerEvent: {}
+[4.309177] (-) TimerEvent: {}
+[4.409535] (-) TimerEvent: {}
+[4.509876] (-) TimerEvent: {}
+[4.610208] (-) TimerEvent: {}
+[4.710580] (-) TimerEvent: {}
+[4.810878] (-) TimerEvent: {}
+[4.911174] (-) TimerEvent: {}
+[5.011648] (-) TimerEvent: {}
+[5.112270] (-) TimerEvent: {}
+[5.212967] (-) TimerEvent: {}
+[5.313397] (-) TimerEvent: {}
+[5.413702] (-) TimerEvent: {}
+[5.514062] (-) TimerEvent: {}
+[5.614449] (-) TimerEvent: {}
+[5.714768] (-) TimerEvent: {}
+[5.798376] (traffic_light_plugin) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX shared library libTrafficLightPlugin.so\x1b[0m\n'}
+[5.814850] (-) TimerEvent: {}
+[5.915135] (-) TimerEvent: {}
+[6.015476] (-) TimerEvent: {}
+[6.024679] (traffic_light_plugin) StdoutLine: {'line': b'[100%] Built target TrafficLightPlugin\n'}
+[6.034558] (traffic_light_plugin) CommandEnded: {'returncode': 0}
+[6.035063] (traffic_light_plugin) JobProgress: {'identifier': 'traffic_light_plugin', 'progress': 'install'}
+[6.042130] (traffic_light_plugin) Command: {'cmd': ['/usr/bin/cmake', '--install', '/root/BFMC_workspace/files/ros/build/traffic_light_plugin'], 'cwd': '/root/BFMC_workspace/files/ros/build/traffic_light_plugin', 'env': OrderedDict([('HOSTNAME', '484b0266f701'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/BFMC_workspace/files/ros/src/car_brain'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/root/BFMC_workspace/files/ros/src/car_brain/install:/root/BFMC_workspace/files/ros/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('QT_X11_NO_MITSHM', '1'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('XDG_RUNTIME_DIR', '/tmp/xdg'), ('DISPLAY', ':1'), ('LANG', 'C.UTF-8'), ('XAUTHORITY', '/run/user/1000/xauth_QaldMj'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/root/BFMC_workspace/files/ros/install/traffic_light_plugin:/root/BFMC_workspace/files/ros/install/my_robot_controller:/opt/ros/humble'), ('IGN_GAZEBO_RESOURCE_PATH', ':/root/BFMC_workspace/simulation/models_pkg'), ('PWD', '/root/BFMC_workspace/files/ros/build/traffic_light_plugin'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/root/BFMC_workspace/files/ros/install/my_robot_controller/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/root/BFMC_workspace/files/ros/install/traffic_light_plugin:/root/BFMC_workspace/files/ros/install/my_robot_controller:/opt/ros/humble')]), 'shell': False}
+[6.048424] (traffic_light_plugin) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[6.048643] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/lib/traffic_light_plugin/libTrafficLightPlugin.so\n'}
+[6.054548] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/ament_index/resource_index/package_run_dependencies/traffic_light_plugin\n'}
+[6.054797] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/ament_index/resource_index/parent_prefix_path/traffic_light_plugin\n'}
+[6.055060] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/ament_prefix_path.sh\n'}
+[6.055342] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/ament_prefix_path.dsv\n'}
+[6.055532] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/path.sh\n'}
+[6.055712] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/path.dsv\n'}
+[6.055801] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.bash\n'}
+[6.055872] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.sh\n'}
+[6.055940] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.zsh\n'}
+[6.056008] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.dsv\n'}
+[6.056094] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/package.dsv\n'}
+[6.056201] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/ament_index/resource_index/packages/traffic_light_plugin\n'}
+[6.056286] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/cmake/traffic_light_pluginConfig.cmake\n'}
+[6.056353] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/cmake/traffic_light_pluginConfig-version.cmake\n'}
+[6.056420] (traffic_light_plugin) StdoutLine: {'line': b'-- Installing: /root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/package.xml\n'}
+[6.057902] (traffic_light_plugin) CommandEnded: {'returncode': 0}
+[6.064993] (traffic_light_plugin) JobEnded: {'identifier': 'traffic_light_plugin', 'rc': 0}
+[6.065559] (-) EventReactorShutdown: {}

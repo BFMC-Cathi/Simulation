@@ -21,4 +21,4 @@ source /opt/ros/humble/setup.bash
 source install/setup.bash
 
 echo "Environment ready. Launching BFMC Competition World..."
-ros2 launch my_robot_controller sim_launch.py
+ros2 launch car_brain sim_launch.py
