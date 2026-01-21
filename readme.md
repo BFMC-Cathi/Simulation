@@ -1,11 +1,13 @@
-**Requirements**
+***Requirements***
 
 Docker 
+
 Git
 
 
 
-**Creating the Set Up**
+***Creating the Set Up***
+
 Clone the project to your desired location:
 
 git clone https://github.com/BFMC-Cathi/Simulation
@@ -14,13 +16,13 @@ cd BFMC_workspace
 
 
 
-**Build the Docker Image**
+***Build the Docker Image***
 
 docker build -t team_cathi/bfmc_env .
 
 
 
-**Run the Container for the First Time**
+***Run the Container for the First Time***
 
 xhost +local:docker
 
@@ -36,7 +38,8 @@ docker run -it \
 
   
   
-**To Run Whenever You Want**
+***To Run Whenever You Want***
+
 xhost +local:docker
 
 docker start bfmc_sim
