@@ -1,0 +1,16 @@
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/lib/traffic_light_plugin/libTrafficLightPlugin.so
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/ament_index/resource_index/package_run_dependencies/traffic_light_plugin
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/ament_index/resource_index/parent_prefix_path/traffic_light_plugin
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/ament_prefix_path.sh
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/ament_prefix_path.dsv
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/path.sh
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/environment/path.dsv
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.bash
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.sh
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.zsh
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/local_setup.dsv
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/package.dsv
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/ament_index/resource_index/packages/traffic_light_plugin
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/cmake/traffic_light_pluginConfig.cmake
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/cmake/traffic_light_pluginConfig-version.cmake
+/root/BFMC_workspace/files/ros/install/traffic_light_plugin/share/traffic_light_plugin/package.xml

@@ -1,0 +1,76 @@
+<?xml version='1.0'?>
+<sdf version="1.8">
+  <model name='automobile'>
+    <include><uri>model://chassis</uri></include>
+    <include><uri>model://wheel_left</uri><pose>-0.152 0.081 0 0 0 0</pose><name>wheel_rear_left</name></include>
+    <include><uri>model://wheel_right</uri><pose>-0.152 -0.081 0 0 0 0</pose><name>wheel_rear_right</name></include>
+    <include><uri>model://steering_column</uri><pose>0.112 0.0725 0 0 0 0</pose><name>steer_left</name></include>
+    <include><uri>model://steering_column</uri><pose>0.112 -0.0725 0 0 0 0</pose><name>steer_right</name></include>
+    <include><uri>model://wheel_left</uri><pose>0.118 0.081 0 0 0 0</pose><name>wheel_front_left</name></include>
+    <include><uri>model://wheel_right</uri><pose>0.118 -0.081 0 0 0 0</pose><name>wheel_front_right</name></include>
+    <include><uri>model://camera</uri><pose>0 0 0.2 0 0.2617 0</pose><name>camera</name></include>
+    <include><uri>model://car_body</uri><pose>-0.024 0.0 -0.028 0 0.0 0</pose><name>car_body</name></include>
+
+    <joint name='joint_leftrear_rim' type='revolute'>
+      <parent>chassis::link</parent>
+      <child>wheel_rear_left::link_rim</child>
+      <axis><xyz>0 0 -1</xyz><limit><lower>-1.7e+308</lower><upper>1.7e+308</upper></limit></axis>
+    </joint>
+    <joint name='joint_rightrear_rim' type='revolute'>
+      <parent>chassis::link</parent>
+      <child>wheel_rear_right::link_rim</child>
+      <axis><xyz>0 0 -1</xyz><limit><lower>-1.7e+308</lower><upper>1.7e+308</upper></limit></axis>
+    </joint>
+    <joint name='joint_leftfront_steer' type='revolute'>
+      <parent>chassis::link</parent>
+      <child>steer_left::link_steer</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.52</lower>
+          <upper>0.52</upper>
+          <effort>1000.0</effort>
+        </limit>
+      </axis>
+    </joint>
+    <joint name='joint_rightfront_steer' type='revolute'>
+      <parent>chassis::link</parent>
+      <child>steer_right::link_steer</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.52</lower>
+          <upper>0.52</upper>
+          <effort>1000.0</effort>
+        </limit>
+      </axis>
+    </joint>
+    <joint name='joint_rightfront_rim' type='revolute'>
+      <parent>steer_right::link_steer</parent>
+      <child>wheel_front_right::link_rim</child>
+      <axis><xyz>0 0 -1</xyz><limit><lower>-1.7e+308</lower><upper>1.7e+308</upper></limit></axis>
+    </joint>
+    <joint name='joint_leftfront_rim' type='revolute'>
+      <parent>steer_left::link_steer</parent>
+      <child>wheel_front_left::link_rim</child>
+      <axis><xyz>0 0 -1</xyz><limit><lower>-1.7e+308</lower><upper>1.7e+308</upper></limit></axis>
+    </joint>
+    <joint name='joint_body' type='fixed'><parent>chassis::link</parent><child>car_body::link</child></joint>
+    <joint name='joint_camera' type='fixed'><parent>chassis::link</parent><child>camera::link_camera</child></joint>
+
+    <plugin filename="libignition-gazebo-ackermann-steering-system.so" name="ignition::gazebo::systems::AckermannSteering">
+      <left_joint>joint_leftrear_rim</left_joint>
+      <right_joint>joint_rightrear_rim</right_joint>
+      <left_steering_joint>joint_leftfront_steer</left_steering_joint>
+      <right_steering_joint>joint_rightfront_steer</right_steering_joint>
+      <wheel_separation>0.162</wheel_separation>
+      <wheel_base>0.26</wheel_base>
+      <wheel_radius>0.0325</wheel_radius>
+      <steering_limit>0.5</steering_limit>
+      <topic>automobile/command</topic>
+    </plugin>
+    <plugin filename="libignition-gazebo-imu-system.so"
+            name="ignition::gazebo::systems::Imu">
+    </plugin>
+  </model>
+</sdf>

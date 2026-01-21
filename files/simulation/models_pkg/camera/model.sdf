@@ -1,0 +1,57 @@
+<?xml version='1.0'?>
+<sdf version="1.8">
+  <model name='camera'>
+    <link name='link_camera'>
+      <inertial>
+        <mass>0.0052875</mass>
+        <inertia>
+          <ixx>4.1e-07</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>7.9e-07</iyy>
+          <iyz>0</iyz>
+          <izz>4.1e-07</izz>
+        </inertia>
+      </inertial>
+      <visual name='visual'>
+        <geometry>
+          <box>
+            <size>0.005 0.03 0.03</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.3 0.3 0.3 1</ambient>
+          <diffuse>0.7 0.7 0.7 1</diffuse>
+          <specular>0.01 0.01 0.01 1</specular>
+        </material>
+      </visual>
+      <collision name='collision'>
+        <geometry>
+          <box>
+            <size>0.005 0.03 0.03</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <sensor type="camera" name="camera1">
+        <update_rate>30.0</update_rate>
+        <visualize>true</visualize>
+        <always_on>1</always_on>
+        <topic>automobile/camera/image_raw</topic>
+        <gz_frame_id>link_camera</gz_frame_id>
+        <camera name="head">
+          <horizontal_fov>1.085594795</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.02</near>
+            <far>100</far>
+          </clip>
+        </camera>
+      </sensor>
+    </link>
+  </model>
+</sdf>

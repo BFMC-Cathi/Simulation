@@ -1,0 +1,85 @@
+<?xml version='1.0'?>
+<sdf version="1.8">
+  <model name='traffic_light'>
+    <static>true</static>
+
+    <link name='case'>
+      <pose>-0.048681 0.002156 0 0 -0 0</pose>
+      <visual name='visual'>
+        <geometry>
+          <mesh>
+            <uri>model://traffic_light/meshes/traffic_light_case.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.1 0.1 0.1 1</ambient>
+          <diffuse>0.1 0.1 0.1 1</diffuse>
+        </material>
+      </visual>
+      <collision name='collision'>
+        <geometry>
+          <box>
+            <size>0.25 0.25 0.75</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name='green_lens'>
+      <pose>-0.018681 0.002156 0.09102 0 -0 0</pose>
+      <visual name='visual'>
+        <geometry>
+          <sphere><radius>0.025</radius></sphere>
+        </geometry>
+        <material>
+          <ambient>0 1 0 1</ambient>
+          <diffuse>0 1 0 1</diffuse>
+          <emissive>0 1 0 1</emissive>
+        </material>
+      </visual>
+    </link>
+
+    <link name='yellow_lens'>
+      <pose>-0.018681 0.002156 0.15 0 -0 0</pose>
+      <visual name='visual'>
+        <geometry>
+          <sphere><radius>0.025</radius></sphere>
+        </geometry>
+        <material>
+          <ambient>1 1 0 1</ambient>
+          <diffuse>1 1 0 1</diffuse>
+          <emissive>1 1 0 1</emissive>
+        </material>
+      </visual>
+    </link>
+
+    <link name='red_lens'>
+      <pose>-0.018681 0.002156 0.21022 0 -0 0</pose>
+      <visual name='visual'>
+        <geometry>
+          <sphere><radius>0.025</radius></sphere>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <emissive>1 0 0 1</emissive>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="green_joint" type="fixed">
+      <parent>case</parent> <child>green_lens</child>
+    </joint>
+    <joint name="yellow_joint" type="fixed">
+      <parent>case</parent> <child>yellow_lens</child>
+    </joint>
+    <joint name="red_joint" type="fixed">
+      <parent>case</parent> <child>red_lens</child>
+    </joint>
+
+
+    <plugin name="traffic_light_plugin" filename="/root/BFMC_workspace/files/ros/install/traffic_light_plugin/lib/traffic_light_plugin/libTrafficLightPlugin.so"></plugin>
+
+  </model>
+</sdf>

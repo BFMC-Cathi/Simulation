@@ -1,0 +1,78 @@
+<?xml version='1.0'?>
+<sdf version="1.8">
+  <model name='oneway_sign'>
+    <static>true</static>
+
+    <link name='sign_leg'>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.166667</ixx> <ixy>0</ixy> <ixz>0</ixz>
+          <iyy>0.166667</iyy> <iyz>0</iyz> <izz>0.166667</izz>
+        </inertia>
+        <pose>0 0 0 0 0 0</pose>
+      </inertial>
+      <pose>0.002193 -0.000682 -0.07606 0 -0 0</pose>
+
+      <visual name='visual'>
+        <geometry>
+          <mesh>
+            <uri>model://subassembly/meshes/sign_leg.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name='collision'>
+        <geometry>
+          <box>
+            <size>0.05 0.05 1.0</size> </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name='rectangular_support'>
+      <inertial>
+        <mass>0.022</mass>
+        <inertia>
+          <ixx>0.166667</ixx> <ixy>0</ixy> <ixz>0</ixz>
+          <iyy>0.166667</iyy> <iyz>0</iyz> <izz>0.166667</izz>
+        </inertia>
+      </inertial>
+      <pose>0 0 0.09894 0 0 3.141592</pose>
+
+      <visual name='visual'>
+        <geometry>
+          <mesh>
+            <uri>model://oneway_sign/meshes/oneway_sign.dae</uri>
+            <scale>10 10 10</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>1 1 1 1</diffuse>
+          <specular>0 0 0 1</specular>
+          <pbr>
+            <metal>
+              <albedo_map>model://oneway_sign/meshes/oneway.png</albedo_map>
+            </metal>
+          </pbr>
+        </material>
+      </visual>
+
+      <collision name='collision'>
+        <geometry>
+          <box>
+            <size>0.12 0.02 0.12</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name='support_to_leg_joint' type='fixed'>
+      <parent>sign_leg</parent>
+      <child>rectangular_support</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>
+
+  </model>
+</sdf>
