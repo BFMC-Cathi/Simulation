@@ -12,7 +12,7 @@ Clone the project to your desired location:
 
 git clone https://github.com/BFMC-Cathi/Simulation
 
-cd Simulation
+cd BFMC_workspace
 
 
 

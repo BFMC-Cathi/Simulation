@@ -257,7 +257,7 @@
 		],
 		"prefix" : 
 		{
-			"path" : "/root/BFMC_workspace/files/ros/install/traffic_light_plugin"
+			"path" : "/home/ros_dev/BFMC_workspace/files/ros/install/traffic_light_plugin"
 		}
 	},
 	"link" : 

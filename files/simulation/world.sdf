@@ -20,137 +20,137 @@
       <shadows>true</shadows>
     </scene>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/track</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/track</uri>
       <name>track</name>
       <pose>0.016706 0 0 0 -0 0</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/rcCar_assembly</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/rcCar_assembly</uri>
       <name>automobile</name>
       <pose>1.19164 -5.47604 0.033 -0 -0 0.000191</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/stop_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/stop_sign</uri>
       <name>stop_sign_1</name>
       <pose>2.49908 2.64664 -0 0 -0 1.57</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/parking_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/parking_sign</uri>
       <name>parking_sign_1</name>
       <pose>-1.87467 -6.46909 0.079866 0 -0 0</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_1</name>
       <pose>-4.08755 1.16427 0.096091 0.025359 -0.069592 -1.57459</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_2</name>
       <pose>-3.43191 0.61495 0.081751 -0.017316 0.068193 1.51535</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_3</name>
       <pose>-6.41862 2.78468 0.084666 -0.064323 -0.036734 -0.172223</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_4</name>
       <pose>-6.08866 3.7206 0.076708 0.068678 0.027741 3.10427</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_5</name>
       <pose>-0.887648 -3.79946 0.079984 0.007417 -0.025286 -0.003559</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_6</name>
       <pose>-0.550989 -2.88027 0.079734 -0.002839 0.005615 -3.1276</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_7</name>
       <pose>3.44538 -4.28555 0.090593 0.021297 -0.070939 -1.51674</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_8</name>
       <pose>5.09387 -4.95671 0.070929 -0.028305 0.068449 1.52429</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/crosswalk_sign</uri>
       <name>crosswalk_sign_9</name>
       <pose>-1.47445 -6.48127 0.079237 -0.012257 -0.027414 0.023757</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/enter_highway_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/enter_highway_sign</uri>
       <name>enter_highway_sign_1</name>
       <pose>2.91761 4.6009 0.080586 -0.065208 -0.035139 -0.147615</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/leave_highway_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/leave_highway_sign</uri>
       <name>leave_highway_sign_1</name>
       <pose>2.89639 3.57644 0.079478 0.065167 0.035217 2.99279</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/oneway_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/oneway_sign</uri>
       <name>oneway_sign_1</name>
       <pose>-2.99632 -6.46929 0.077255 -0.069164 -0.026506 -0.019431</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/prohibited_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/prohibited_sign</uri>
       <name>prohibited_sign_1</name>
       <pose>-2.76805 -3.6967 0.085972 0.025423 -0.069569 -1.5755</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
       <name>traffic_light_1</name>
       <pose>-4.82304 -2.84306 0.003361 0.045013 -0.034127 -0.056244</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
       <name>traffic_light_2</name>
       <pose>-5.98097 -3.82495 0.006683 0.010053 -0.017608 3.06058</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
       <name>traffic_light_3</name>
       <pose>-5.05814 -4.21128 0.007869 0.033136 0.045747 -1.64811</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/traffic_light</uri>
       <name>traffic_light_4</name>
       <pose>-5.73069 -2.49314 0.007799 -0.033181 -0.030908 1.55798</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/priority_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/priority_sign</uri>
       <name>priority_sign_1</name>
       <pose>3.23408 -6.99215 0.083554 -0.070281 -0.023381 0.025343</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
       <name>roundabout_sign_1</name>
       <pose>4.47623 2.95122 0.068534 -0.025944 0.069377 1.55859</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
       <name>roundabout_sign_2</name>
       <pose>3.40253 3.62305 0.074259 -0.024515 -0.025748 -0.109547</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
       <name>roundabout_sign_3</name>
       <pose>4.92274 4.57092 0.07548 0.071804 0.018165 -3.04296</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/roundabout_sign</uri>
       <name>roundabout_sign_4</name>
       <pose>3.85139 5.25806 0.073845 0.02641 -0.069201 -1.58973</pose>
     </include>
     <include>
-      <uri>file:///root/BFMC_workspace/files/simulation/models_pkg/ramp</uri>
+      <uri>file:///home/ros_dev/BFMC_workspace/files/simulation/models_pkg/ramp</uri>
       <name>ramp_1</name>
       <pose>-4.71511 5.63281 0 0 -0 0</pose>
     </include>

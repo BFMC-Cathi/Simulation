@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/BFMC_workspace/files/ros/src/traffic_light_plugin
+CMAKE_SOURCE_DIR = /home/ros_dev/BFMC_workspace/files/ros/src/traffic_light_plugin
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/BFMC_workspace/files/ros/build/traffic_light_plugin
+CMAKE_BINARY_DIR = /home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /root/BFMC_workspace/files/ros/build/traffic_light_plugin && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/BFMC_workspace/files/ros/src/traffic_light_plugin /root/BFMC_workspace/files/ros/src/traffic_light_plugin /root/BFMC_workspace/files/ros/build/traffic_light_plugin /root/BFMC_workspace/files/ros/build/traffic_light_plugin /root/BFMC_workspace/files/ros/build/traffic_light_plugin/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ros_dev/BFMC_workspace/files/ros/src/traffic_light_plugin /home/ros_dev/BFMC_workspace/files/ros/src/traffic_light_plugin /home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin /home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin /home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/uninstall.dir/depend
 

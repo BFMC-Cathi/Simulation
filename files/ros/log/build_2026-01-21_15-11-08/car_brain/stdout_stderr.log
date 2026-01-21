@@ -10,24 +10,24 @@ reading manifest file '../../build/car_brain/car_brain.egg-info/SOURCES.txt'
 writing manifest file '../../build/car_brain/car_brain.egg-info/SOURCES.txt'
 running build
 running build_py
-creating /root/BFMC_workspace/files/ros/build/car_brain/build
-creating /root/BFMC_workspace/files/ros/build/car_brain/build/lib
-creating /root/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain
-copying car_brain/__init__.py -> /root/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain
+creating /home/ros_dev/BFMC_workspace/files/ros/build/car_brain/build
+creating /home/ros_dev/BFMC_workspace/files/ros/build/car_brain/build/lib
+creating /home/ros_dev/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain
+copying car_brain/__init__.py -> /home/ros_dev/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain
 running install
 running install_lib
-creating /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain
-copying /root/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain/__init__.py -> /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain
-byte-compiling /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain/__init__.py to __init__.cpython-310.pyc
+creating /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain
+copying /home/ros_dev/BFMC_workspace/files/ros/build/car_brain/build/lib/car_brain/__init__.py -> /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain
+byte-compiling /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain/__init__.py to __init__.cpython-310.pyc
 running install_data
-creating /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index
-creating /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index
-creating /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index/packages
-copying resource/car_brain -> /root/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index/packages
-copying package.xml -> /root/BFMC_workspace/files/ros/install/car_brain/share/car_brain
-creating /root/BFMC_workspace/files/ros/install/car_brain/share/car_brain/launch
-copying launch/sim_launch.py -> /root/BFMC_workspace/files/ros/install/car_brain/share/car_brain/launch
+creating /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/share/ament_index
+creating /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index
+creating /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index/packages
+copying resource/car_brain -> /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/share/ament_index/resource_index/packages
+copying package.xml -> /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/share/car_brain
+creating /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/share/car_brain/launch
+copying launch/sim_launch.py -> /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/share/car_brain/launch
 running install_egg_info
-Copying ../../build/car_brain/car_brain.egg-info to /root/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain-0.0.0-py3.10.egg-info
+Copying ../../build/car_brain/car_brain.egg-info to /home/ros_dev/BFMC_workspace/files/ros/install/car_brain/lib/python3.10/site-packages/car_brain-0.0.0-py3.10.egg-info
 running install_scripts
-writing list of installed files to '/root/BFMC_workspace/files/ros/build/car_brain/install.log'
+writing list of installed files to '/home/ros_dev/BFMC_workspace/files/ros/build/car_brain/install.log'

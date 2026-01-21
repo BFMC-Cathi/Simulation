@@ -1,8 +1,8 @@
-# Install script for directory: /root/BFMC_workspace/files/ros/src/traffic_light_plugin
+# Install script for directory: /home/ros_dev/BFMC_workspace/files/ros/src/traffic_light_plugin
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/root/BFMC_workspace/files/ros/install/traffic_light_plugin")
+  set(CMAKE_INSTALL_PREFIX "/home/ros_dev/BFMC_workspace/files/ros/install/traffic_light_plugin")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -49,7 +49,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/traffic_light_plugin/libTrafficLightPlugin.so"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/traffic_light_plugin" TYPE SHARED_LIBRARY FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/libTrafficLightPlugin.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/traffic_light_plugin" TYPE SHARED_LIBRARY FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/libTrafficLightPlugin.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/traffic_light_plugin/libTrafficLightPlugin.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/traffic_light_plugin/libTrafficLightPlugin.so")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -62,11 +62,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/package_run_dependencies" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/traffic_light_plugin")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/package_run_dependencies" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/traffic_light_plugin")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/parent_prefix_path" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/traffic_light_plugin")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/parent_prefix_path" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/traffic_light_plugin")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -74,7 +74,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin/environment" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/ament_prefix_path.dsv")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin/environment" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/ament_prefix_path.dsv")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -82,42 +82,42 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin/environment" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/path.dsv")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin/environment" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/path.dsv")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.bash")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.bash")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.sh")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.sh")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.zsh")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.zsh")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.dsv")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/local_setup.dsv")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/package.dsv")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_environment_hooks/package.dsv")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/packages" TYPE FILE FILES "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_index/share/ament_index/resource_index/packages/traffic_light_plugin")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/packages" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_index/share/ament_index/resource_index/packages/traffic_light_plugin")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin/cmake" TYPE FILE FILES
-    "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_core/traffic_light_pluginConfig.cmake"
-    "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_core/traffic_light_pluginConfig-version.cmake"
+    "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_core/traffic_light_pluginConfig.cmake"
+    "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/ament_cmake_core/traffic_light_pluginConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/root/BFMC_workspace/files/ros/src/traffic_light_plugin/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/traffic_light_plugin" TYPE FILE FILES "/home/ros_dev/BFMC_workspace/files/ros/src/traffic_light_plugin/package.xml")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -128,5 +128,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

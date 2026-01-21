@@ -98,13 +98,13 @@
 		{
 			"backtrace" : 9,
 			"isGenerated" : true,
-			"path" : "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/CMakeFiles/traffic_light_plugin_uninstall",
+			"path" : "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/CMakeFiles/traffic_light_plugin_uninstall",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "/root/BFMC_workspace/files/ros/build/traffic_light_plugin/CMakeFiles/traffic_light_plugin_uninstall.rule",
+			"path" : "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin/CMakeFiles/traffic_light_plugin_uninstall.rule",
 			"sourceGroupIndex" : 1
 		}
 	],

@@ -68,8 +68,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/root/BFMC_workspace/files/ros/build/traffic_light_plugin",
-		"source" : "/root/BFMC_workspace/files/ros/src/traffic_light_plugin"
+		"build" : "/home/ros_dev/BFMC_workspace/files/ros/build/traffic_light_plugin",
+		"source" : "/home/ros_dev/BFMC_workspace/files/ros/src/traffic_light_plugin"
 	},
 	"version" : 
 	{

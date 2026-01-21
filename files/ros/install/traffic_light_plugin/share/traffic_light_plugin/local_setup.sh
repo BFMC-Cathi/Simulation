@@ -2,7 +2,7 @@
 
 # since this file is sourced use either the provided AMENT_CURRENT_PREFIX
 # or fall back to the destination set at configure time
-: ${AMENT_CURRENT_PREFIX:="/root/BFMC_workspace/files/ros/install/traffic_light_plugin"}
+: ${AMENT_CURRENT_PREFIX:="/home/ros_dev/BFMC_workspace/files/ros/install/traffic_light_plugin"}
 if [ ! -d "$AMENT_CURRENT_PREFIX" ]; then
   if [ -z "$COLCON_CURRENT_PREFIX" ]; then
     echo "The compile time prefix path '$AMENT_CURRENT_PREFIX' doesn't " \

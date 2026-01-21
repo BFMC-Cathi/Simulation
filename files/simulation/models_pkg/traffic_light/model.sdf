@@ -79,7 +79,7 @@
     </joint>
 
 
-    <plugin name="traffic_light_plugin" filename="/root/BFMC_workspace/files/ros/install/traffic_light_plugin/lib/traffic_light_plugin/libTrafficLightPlugin.so"></plugin>
+    <plugin name="traffic_light_plugin" filename="/home/ros_dev/BFMC_workspace/files/ros/install/traffic_light_plugin/lib/traffic_light_plugin/libTrafficLightPlugin.so"></plugin>
 
   </model>
 </sdf>

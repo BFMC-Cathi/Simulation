@@ -3,10 +3,10 @@ from launch import LaunchDescription
 from launch.actions import ExecuteProcess, SetEnvironmentVariable
 
 def generate_launch_description():
-    world_path = '/root/BFMC_workspace/files/simulation/world.sdf'
-    models_path = '/root/BFMC_workspace/files/simulation/models_pkg'
+    world_path = '/home/ros_dev/BFMC_workspace/files/simulation/world.sdf'
+    models_path = '/home/ros_dev/BFMC_workspace/files/simulation/models_pkg'
 
-    plugin_path = '/root/BFMC_workspace/install/traffic_light_plugin/lib/traffic_light_plugin'
+    plugin_path = '/home/ros_dev/BFMC_workspace/install/traffic_light_plugin/lib/traffic_light_plugin'
 
     return LaunchDescription([
         SetEnvironmentVariable(name='IGN_GAZEBO_RESOURCE_PATH', value=models_path),

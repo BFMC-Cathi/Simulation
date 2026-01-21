@@ -1,13 +1,13 @@
 #!/bin/bash
 # Move to the workspace directory first
-cd /root/BFMC_workspace/files/ros || exit
+cd /home/ros_dev/BFMC_workspace/files/ros || exit
 
 # Reset Environment
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ros/humble/lib
-export IGN_GAZEBO_RESOURCE_PATH=/root/BFMC_workspace/files/simulation/models_pkg
+export IGN_GAZEBO_RESOURCE_PATH=/home/ros_dev/BFMC_workspace/files/simulation/models_pkg
 
 # --- ADD THIS NEW LINE ---
-export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/root/BFMC_workspace/files/ros/install/traffic_light_plugin/lib/traffic_light_plugin
+export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/home/ros_dev/BFMC_workspace/files/ros/install/traffic_light_plugin/lib/traffic_light_plugin
 # -------------------------
 
 # Use the engine that worked for your car/track
