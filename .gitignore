@@ -1,0 +1,53 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+dist/
+venv/
+.env/
+.venv/
+
+# ========================
+# Compiled / Model files
+# ========================
+*.pyc
+*.pkl
+*.h5
+*.onnx
+*.pt
+
+# ========================
+# OS / Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ========================
+# ROS 2 / Colcon
+# ========================
+**/build/
+**/install/
+**/log/
+**/*.log
+.colcon/
+.colcon_install_layout
+**/ament_cmake_core/
+**/ament_index/
+latest_build
+latest
+*.bag
+*.db3
+
+# ========================
+# Keep source code
+# ========================
+!files/ros/src/
+!files/ros/src/**
