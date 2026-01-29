@@ -23,7 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-
+            'lane_tracker = car_brain.lane_tracker:main',
+            'traffic_sign = car_brain.traffic_sign:main',
         ],
     },
 )
