@@ -1,0 +1,52 @@
+lane_node:
+  ros__parameters:
+    input_topic: "/automobile/camera/image_raw"
+    input_is_compressed: false
+
+    output_annotated_topic: "/lane_detection/image_annotated"
+    output_lane_info_topic: "/lane_detection/lane_info"
+    output_curvature_topic: "/lane_detection/curvature"
+
+    target_fps: 30.0
+    publish_annotated: true
+
+    gray_threshold: 160
+    sat_threshold: 95
+    canny_low: 45
+    canny_high: 140
+    morph_kernel: 3
+
+    roi_top_y_ratio: 0.50
+    roi_top_width_ratio: 0.50
+    roi_dynamic_shift_px: 80.0
+
+    bev_width: 640
+    bev_height: 480
+    bev_src_points: [220.0, 280.0, 420.0, 280.0, 640.0, 460.0, 0.0, 460.0]
+    bev_dst_points: [100.0, 0.0, 540.0, 0.0, 540.0, 480.0, 100.0, 480.0]
+
+    window_count: 12
+    window_margin_base: 85
+    window_margin_curve_gain: 0.25
+    window_min_pixels: 25
+
+    ransac_iterations: 50
+    ransac_inlier_threshold_px: 14.0
+    ransac_min_inliers: 50
+    poly_degree_candidates: [2, 3]
+
+    temporal_window: 6
+    temporal_ema_alpha: 0.35
+    fallback_timeout_sec: 1.2
+    min_pair_confidence: 0.40
+
+    lane_width_min_px: 180.0
+    lane_width_max_px: 460.0
+    lane_width_var_max_px: 95.0
+    slope_diff_max: 1.2
+    curvature_min_m: 3.0
+    curvature_max_m: 5000.0
+
+    ym_per_px: 0.02
+    xm_per_px: 0.005
+    single_lane_center_offset_px: 190.0

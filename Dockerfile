@@ -20,7 +20,7 @@ RUN python3 -m pip install --upgrade pip
 
 # Install numpy + headless OpenCV first (smaller, no GUI libs needed in container)
 RUN python3 -m pip install --default-timeout=1000 --retries 10 --no-cache-dir \
-    numpy opencv-python-headless
+    "numpy<2" opencv-python-headless
 
 # Install ultralytics (--retries handles transient network timeouts on large deps)
 RUN python3 -m pip install --default-timeout=1000 --retries 10 --no-cache-dir \

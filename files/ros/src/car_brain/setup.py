@@ -14,6 +14,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
+        (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,7 +25,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'yolov8_driving_node = car_brain.yolov8_driving_node:main',
+            'perception_node = car_brain.perception_node:main',
+            'control_state_node = car_brain.control_state_node:main',
+            'lane_node = car_brain.lane_node:main',
         ],
     },
 )

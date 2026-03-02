@@ -18,6 +18,7 @@ License: Apache-2.0
 
 from __future__ import annotations
 
+import os
 import threading
 import time
 from dataclasses import dataclass, field
@@ -246,7 +247,6 @@ class PerceptionEngine:
         elif not os.path.isfile(cfg.model_path):
             self._log_warn(f"Model not found: {cfg.model_path} — CRUISE-ONLY mode.")
         else:
-            import os
             self._model = YOLO(cfg.model_path)
             self._log_info(f"YOLOv8 model loaded: {cfg.model_path}")
 
