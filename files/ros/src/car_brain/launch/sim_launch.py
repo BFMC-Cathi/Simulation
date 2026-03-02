@@ -1,6 +1,7 @@
 import os
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, SetEnvironmentVariable
+from launch.actions import ExecuteProcess, SetEnvironmentVariable, TimerAction
+from launch_ros.actions import Node as RosNode
 
 def generate_launch_description():
     world_path = '/home/ros_dev/BFMC_workspace/files/simulation/world.sdf'
@@ -24,5 +25,29 @@ def generate_launch_description():
                  '/automobile/IMU@sensor_msgs/msg/Imu[ignition.msgs.IMU',
                  '/automobile/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry'],
             output='screen'
-        )
+        ),
+
+        # Launch the driving node after a short delay to let Gazebo start
+        TimerAction(
+            period=5.0,
+            actions=[
+                RosNode(
+                    package='car_brain',
+                    executable='yolov8_driving_node',
+                    name='yolov8_driving_node',
+                    output='screen',
+                    parameters=[{
+                        'cruise_speed': 0.2,
+                        'confidence_threshold': 0.45,
+                        'control_rate_hz': 20.0,
+                        'steering_kp': 0.005,
+                        'steering_ki': 0.0001,
+                        'steering_kd': 0.002,
+                        'publish_visualisation': True,
+                        'stop_hold_sec': 3.0,
+                        'debounce_frames': 3,
+                    }],
+                ),
+            ],
+        ),
     ])

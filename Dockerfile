@@ -9,9 +9,22 @@ RUN apt-get update && apt-get install -y \
     mesa-utils \
     python3-colcon-common-extensions \
     python3-colcon-mixin \
+    python3-pip \
     ros-humble-ros-gz \
+    ros-humble-cv-bridge \
     sudo \
     && rm -rf /var/lib/apt/lists/*
+
+# 1b. Install Python ML / CV packages
+RUN python3 -m pip install --upgrade pip
+
+# Install numpy + headless OpenCV first (smaller, no GUI libs needed in container)
+RUN python3 -m pip install --default-timeout=1000 --retries 10 --no-cache-dir \
+    numpy opencv-python-headless
+
+# Install ultralytics (--retries handles transient network timeouts on large deps)
+RUN python3 -m pip install --default-timeout=1000 --retries 10 --no-cache-dir \
+    ultralytics
 
 # 2. Create a non-root user
 ARG USERNAME=ros_dev

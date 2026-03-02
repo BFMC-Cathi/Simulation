@@ -8,6 +8,7 @@ setup(
     name=package_name,
     version='0.0.0',
     packages=[package_name],
+    package_data={package_name: ['*.pt']},
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -23,8 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'lane_tracker = car_brain.lane_tracker:main',
-            'traffic_sign = car_brain.traffic_sign:main',
+            'yolov8_driving_node = car_brain.yolov8_driving_node:main',
         ],
     },
 )

@@ -2,6 +2,7 @@
 # Python
 # ========================
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *.pyo
 *.pyd
@@ -20,7 +21,14 @@ venv/
 *.pkl
 *.h5
 *.onnx
-*.pt
+*.pth
+*.weights
+
+# ========================
+# Models directory
+# ========================
+models/
+files/models
 
 # ========================
 # OS / Editor
@@ -29,6 +37,9 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # ========================
 # ROS 2 / Colcon
@@ -47,7 +58,16 @@ latest
 *.db3
 
 # ========================
-# Keep source code
+# Gazebo
+# ========================
+.gazebo/
+
+# ========================
+# Keep source code (but not pycache or model weights inside)
 # ========================
 !files/ros/src/
 !files/ros/src/**
+files/ros/src/**/__pycache__/
+files/ros/src/**/*.pth
+files/ros/src/**/*.onnx
+files/ros/src/**/*.weights
