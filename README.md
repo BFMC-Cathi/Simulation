@@ -43,7 +43,6 @@ docker start bfmc_sim
 docker exec -it bfmc_sim bash
 
 # 4. Inside the container, run the simulation
-cd /home/ros_dev/BFMC_workspace/files/ros
 ./sim.sh
 ```
 
