@@ -46,6 +46,7 @@ class LaneState:
     left_fit_valid: bool = False
     right_fit_valid: bool = False
     both_lanes_valid: bool = False
+    dashed_line: bool = False
     using_fallback: bool = False   # True when using last-known-good fit
     timestamp: float = 0.0
 
@@ -106,8 +107,9 @@ class LaneDetector:
         bev_w = self._cfg.bev_width
         bev_h = self._cfg.bev_height
 
-        # 1. Binary threshold on the full image
-        binary = self._threshold(frame)
+        # 1. Remove red bus-lane regions, then threshold
+        frame_no_red = self._remove_red_lane(frame)
+        binary = self._threshold(frame_no_red)
 
         # 2. Bird's-eye view warp
         bev = cv2.warpPerspective(binary, self._M, (bev_w, bev_h))
@@ -168,6 +170,14 @@ class LaneDetector:
             state.left_fit_valid and state.right_fit_valid
         )
 
+        # Dashed line: both lanes visible but pixel count is low
+        # meaning lines are short/interrupted (dashed pattern)
+        pixel_count = getattr(self, '_last_center_pixel_count', 999)
+        state.dashed_line = (
+            pixel_count > 30 and
+            pixel_count < 800
+        )
+
         # ── Fallback to last-known-good if lanes are lost ───────
         avg_left = (
             self._average_fit(self._left_fits)
@@ -220,6 +230,17 @@ class LaneDetector:
     # ================================================================
     #  PIPELINE STAGES
     # ================================================================
+
+    def _remove_red_lane(self, frame: np.ndarray) -> np.ndarray:
+        """Mask out red bus lane markings before thresholding."""
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        mask1 = cv2.inRange(hsv, np.array([0, 80, 80]), np.array([15, 255, 255]))
+        mask2 = cv2.inRange(hsv, np.array([160, 80, 80]), np.array([180, 255, 255]))
+        red_mask = cv2.bitwise_or(mask1, mask2)
+
+        filtered = frame.copy()
+        filtered[red_mask > 0] = 0
+        return filtered
 
     def _threshold(self, frame: np.ndarray) -> np.ndarray:
         """Convert to grayscale → Gaussian blur → binary threshold.
@@ -333,6 +354,11 @@ class LaneDetector:
             np.concatenate(right_lane_inds)
             if right_lane_inds else np.array([], dtype=int)
         )
+
+        # Dashed line: detected when center lane pixels are sparse
+        # and alternating (gaps between clusters)
+        center_pixel_count = len(left_cat) + len(right_cat)
+        self._last_center_pixel_count = int(center_pixel_count)
 
         lx = nonzero_x[left_cat] if len(left_cat) > 0 else np.array([])
         ly = nonzero_y[left_cat] if len(left_cat) > 0 else np.array([])

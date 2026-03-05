@@ -27,7 +27,6 @@ setup(
         'console_scripts': [
             'perception_node = car_brain.perception_node:main',
             'control_state_node = car_brain.control_state_node:main',
-            'lane_node = car_brain.lane_node:main',
         ],
     },
 )

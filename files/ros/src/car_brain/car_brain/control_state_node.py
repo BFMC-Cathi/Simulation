@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Control & State Node — ROS 2
-==============================
-Houses the **Finite State Machine** and the **PID controller**.
-This node does **no** image processing; it only subscribes to the
-lightweight topics published by ``perception_node`` and outputs
-velocity commands.
+Control & State Node — Team Cathı / BFMC
+==========================================
+ROS 2 node that:
+  1. Subscribes to ``/perception/objects``, ``/perception/lane_state``,
+     ``/automobile/IMU``, and ``/automobile/odometry``
+  2. Feeds detections and lane state into the ``DrivingFSM``
+  3. Translates the FSM's ``StateOutput`` into PID-controlled
+     ``geometry_msgs/Twist`` messages on ``/automobile/command``
 
-Subscriptions
--------------
-  /perception/objects     (std_msgs/String — JSON)
-  /perception/lane_state  (std_msgs/String — JSON)
-
-Publications
-------------
-  /automobile/command     (geometry_msgs/Twist)
+This is the "brain" node — it makes all driving decisions.
 
 Author : Team Cathı – Bosch Future Mobility Challenge
 License: Apache-2.0
@@ -24,285 +19,254 @@ License: Apache-2.0
 from __future__ import annotations
 
 import json
+import math
+import os
 import time
-from typing import Optional
+from typing import Dict, List, Optional
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
 from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
+from std_msgs.msg import String
 
 from car_brain.config import DrivingConfig
-from car_brain.fsm_logic import DrivingFSM, ObjectDetection, FSMOutput
-from car_brain.control import PIDController
+from car_brain.control import VehicleController, TwistCommand
+from car_brain.fsm_logic import DrivingFSM, StateOutput
+from car_brain.track_graph import TrackGraph
+
+
+def _quaternion_to_yaw(q) -> float:
+    """Extract yaw (degrees) from a quaternion (geometry_msgs/Quaternion)."""
+    # yaw = atan2(2*(w*z + x*y), 1 - 2*(y*y + z*z))
+    siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
+    cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
+    yaw_rad = math.atan2(siny_cosp, cosy_cosp)
+    return math.degrees(yaw_rad)
 
 
 class ControlStateNode(Node):
-    """
-    ROS 2 node: perception topics → FSM → PID → /cmd_vel.
-
-    The node runs at a fixed ``control_rate_hz`` timer and never blocks
-    on any heavy computation — perception is done in a separate node.
-    """
+    """FSM + PID controller — subscribes to perception, publishes Twist."""
 
     def __init__(self) -> None:
         super().__init__("control_state_node")
 
-        # ── Configuration ───────────────────────────────────────
-        self._cfg = self._declare_and_load_params()
+        # ── Build config ────────────────────────────────────────
+        self._cfg = self._declare_and_load_config()
 
-        # ── FSM ─────────────────────────────────────────────────
-        self._fsm = DrivingFSM(self._cfg, self.get_logger())
+        # ── Track graph ─────────────────────────────────────────
+        tg: Optional[TrackGraph] = None
+        graph_path = self._cfg.track_graph_path
+        if os.path.isfile(graph_path):
+            try:
+                tg = TrackGraph(graph_path)
+                self.get_logger().info(
+                    f"TrackGraph loaded: {graph_path} "
+                    f"({tg.G.number_of_nodes()} nodes, "
+                    f"{tg.G.number_of_edges()} edges)"
+                )
+            except Exception as exc:
+                self.get_logger().error(f"Failed to load TrackGraph: {exc}")
+        else:
+            self.get_logger().warn(
+                f"Track graph not found: {graph_path} — "
+                "intersection navigation will use timed fallback"
+            )
 
-        # ── PID for steering (CTE → angular_z) ─────────────────
-        self._steer_pid = PIDController(
-            kp=self._cfg.steering_kp,
-            ki=self._cfg.steering_ki,
-            kd=self._cfg.steering_kd,
-            output_min=-self._cfg.max_steering,
-            output_max=self._cfg.max_steering,
-        )
+        # ── FSM + controller ────────────────────────────────────
+        self._fsm = DrivingFSM(self._cfg, tg, logger=self.get_logger())
+        self._ctrl = VehicleController(self._cfg)
 
-        # ── PID for heading correction (heading_error → angular_z) ──
-        self._heading_pid = PIDController(
-            kp=self._cfg.steering_kp * 2.0,  # gentle heading correction
-            ki=0.0,
-            kd=self._cfg.steering_kd * 0.5,
-            output_min=-self._cfg.max_steering * 0.3,
-            output_max=self._cfg.max_steering * 0.3,
-        )
+        # ── Cached perception data ──────────────────────────────
+        self._last_detections: List[Dict] = []
+        self._last_lane: Dict = {}
+        self._last_traffic_light: str = "unknown"
+        self._last_perception_time: float = 0.0
 
-        # ── Speed ramp state ───────────────────────────────────
-        self._current_speed: float = 0.0
-        self._filtered_steer: float = 0.0
-        self._last_time: float = time.monotonic()
+        # ── Pose from odometry ──────────────────────────────────
+        self._pos_x: float = 0.0
+        self._pos_y: float = 0.0
+        self._yaw_deg: float = 0.0
 
-        # ── Latest perception data ─────────────────────────────
-        self._latest_objects: Optional[dict] = None
-        self._latest_lane: Optional[dict] = None
-        self._objects_stamp: float = 0.0
-        self._lane_stamp: float = 0.0
+        # ── IMU yaw (backup) ────────────────────────────────────
+        self._imu_yaw_deg: float = 0.0
 
         # ── Subscribers ─────────────────────────────────────────
         self._obj_sub = self.create_subscription(
-            String,
-            self._cfg.objects_topic,
-            self._on_objects,
-            10,
+            String, self._cfg.objects_topic, self._objects_cb, 10
         )
         self._lane_sub = self.create_subscription(
-            String,
-            self._cfg.lane_state_topic,
-            self._on_lane,
-            10,
+            String, self._cfg.lane_state_topic, self._lane_cb, 10
+        )
+        self._odom_sub = self.create_subscription(
+            Odometry, self._cfg.odom_topic, self._odom_cb, 10
+        )
+        self._imu_sub = self.create_subscription(
+            Imu, self._cfg.imu_topic, self._imu_cb, 10
         )
 
         # ── Publisher ───────────────────────────────────────────
-        self._cmd_pub = self.create_publisher(Twist, self._cfg.cmd_topic, 10)
+        self._cmd_pub = self.create_publisher(
+            Twist, self._cfg.cmd_topic, 10
+        )
 
-        # ── Control loop timer ──────────────────────────────────
+        # ── Control timer ───────────────────────────────────────
         period = 1.0 / self._cfg.control_rate_hz
-        self._timer = self.create_timer(period, self._control_tick)
+        self._timer = self.create_timer(period, self._control_loop)
 
         self.get_logger().info(
-            f"control_state_node started  |  "
-            f"PID Kp={self._cfg.steering_kp} Ki={self._cfg.steering_ki} "
-            f"Kd={self._cfg.steering_kd}  |  "
-            f"cruise={self._cfg.cruise_speed} m/s  |  "
-            f"rate={self._cfg.control_rate_hz} Hz"
+            f"ControlStateNode started — rate: {self._cfg.control_rate_hz} Hz, "
+            f"cmd topic: {self._cfg.cmd_topic}"
         )
 
     # ================================================================
-    #  PARAMETER DECLARATION
+    #  ROS parameter helpers
     # ================================================================
 
-    def _declare_and_load_params(self) -> DrivingConfig:
+    def _declare_and_load_config(self) -> DrivingConfig:
         cfg = DrivingConfig()
 
-        def _p(name, default):
+        def _p(name: str, default):
             self.declare_parameter(name, default)
             return self.get_parameter(name).value
 
-        cfg.cmd_topic = _p("cmd_topic", cfg.cmd_topic)
-        cfg.objects_topic = _p("objects_topic", cfg.objects_topic)
-        cfg.lane_state_topic = _p("lane_state_topic", cfg.lane_state_topic)
+        # Track graph
+        cfg.track_graph_path = _p("track_graph_path", cfg.track_graph_path)
+        cfg.nav_source_node = _p("nav_source_node", cfg.nav_source_node)
+        cfg.nav_target_node = _p("nav_target_node", cfg.nav_target_node)
+
+        # Speed
         cfg.cruise_speed = _p("cruise_speed", cfg.cruise_speed)
         cfg.slow_speed = _p("slow_speed", cfg.slow_speed)
         cfg.highway_speed = _p("highway_speed", cfg.highway_speed)
+        cfg.intersection_speed = _p("intersection_speed", cfg.intersection_speed)
+
+        # PID
         cfg.steering_kp = _p("steering_kp", cfg.steering_kp)
         cfg.steering_ki = _p("steering_ki", cfg.steering_ki)
         cfg.steering_kd = _p("steering_kd", cfg.steering_kd)
         cfg.max_steering = _p("max_steering", cfg.max_steering)
         cfg.steering_alpha = _p("steering_alpha", cfg.steering_alpha)
+
+        # Ramping
         cfg.max_accel = _p("max_accel", cfg.max_accel)
         cfg.max_decel = _p("max_decel", cfg.max_decel)
         cfg.control_rate_hz = _p("control_rate_hz", cfg.control_rate_hz)
+
+        # FSM
         cfg.stop_hold_sec = _p("stop_hold_sec", cfg.stop_hold_sec)
+        cfg.intersection_stop_sec = _p("intersection_stop_sec", cfg.intersection_stop_sec)
+        cfg.intersection_turn_sec = _p("intersection_turn_sec", cfg.intersection_turn_sec)
+        cfg.intersection_turn_steer = _p("intersection_turn_steer", cfg.intersection_turn_steer)
         cfg.debounce_frames = _p("debounce_frames", cfg.debounce_frames)
         cfg.frame_timeout_sec = _p("frame_timeout_sec", cfg.frame_timeout_sec)
         cfg.image_height = _p("image_height", cfg.image_height)
+        cfg.image_width = _p("image_width", cfg.image_width)
+
+        # Thresholds
+        cfg.stop_soft_threshold = _p("stop_soft_threshold", cfg.stop_soft_threshold)
+        cfg.stop_hard_threshold = _p("stop_hard_threshold", cfg.stop_hard_threshold)
+        cfg.crosswalk_threshold = _p("crosswalk_threshold", cfg.crosswalk_threshold)
+        cfg.roundabout_threshold = _p("roundabout_threshold", cfg.roundabout_threshold)
+        cfg.parking_threshold = _p("parking_threshold", cfg.parking_threshold)
 
         return cfg
 
     # ================================================================
-    #  SUBSCRIPTION CALLBACKS
+    #  Subscriber callbacks
     # ================================================================
 
-    def _on_objects(self, msg: String) -> None:
-        """Parse JSON detections from perception_node."""
+    def _objects_cb(self, msg: String) -> None:
         try:
-            self._latest_objects = json.loads(msg.data)
-            self._objects_stamp = time.monotonic()
-            self._fsm.notify_frame()
-        except json.JSONDecodeError as e:
-            self.get_logger().warn(f"Bad JSON on objects topic: {e}")
-
-    def _on_lane(self, msg: String) -> None:
-        """Parse JSON lane state from perception_node."""
-        try:
-            self._latest_lane = json.loads(msg.data)
-            self._lane_stamp = time.monotonic()
-        except json.JSONDecodeError as e:
-            self.get_logger().warn(f"Bad JSON on lane topic: {e}")
-
-    # ================================================================
-    #  MAIN CONTROL LOOP
-    # ================================================================
-
-    def _control_tick(self) -> None:
-        now = time.monotonic()
-        dt = now - self._last_time
-        if dt <= 0.0:
-            dt = 1e-4
-        self._last_time = now
-
-        # ── Parse YOLO detections for the FSM ───────────────────
-        detections = []
-        tl_colour = "unknown"
-        if self._latest_objects is not None:
-            tl_colour = self._latest_objects.get(
-                "traffic_light_colour", "unknown"
-            )
-            for d in self._latest_objects.get("detections", []):
-                detections.append(ObjectDetection(
-                    class_name=d["class_name"],
-                    confidence=d["confidence"],
-                    x1=d["x1"], y1=d["y1"],
-                    x2=d["x2"], y2=d["y2"],
-                ))
-
-        # ── Run FSM ─────────────────────────────────────────────
-        fsm_out: FSMOutput = self._fsm.update(
-            detections, tl_colour, self._cfg.image_height
-        )
-
-        # ── Parse lane state for PID ────────────────────────────
-        cte = 0.0
-        heading_error = 0.0
-        using_fallback = False
-        if self._latest_lane is not None:
-            cte = self._latest_lane.get("cte", 0.0)
-            heading_error = self._latest_lane.get("heading_error", 0.0)
-            using_fallback = self._latest_lane.get("using_fallback", False)
-
-        # ── Safety clamp: CTE must be normalised to [-1, +1] ───
-        #    Reject any stale / corrupt value that is out of range.
-        if abs(cte) > 1.0:
-            self.get_logger().warn(
-                f"CTE out of range ({cte:.1f}), clamping to 0"
-            )
-            cte = 0.0
-            using_fallback = True
-        if abs(heading_error) > 0.5:     # ~28 degrees — larger is noise
-            heading_error = max(-0.5, min(0.5, heading_error))
-
-        # ── Speed ramp ──────────────────────────────────────────
-        target_speed = fsm_out.target_speed
-        speed_diff = target_speed - self._current_speed
-        if speed_diff > 0:
-            max_step = self._cfg.max_accel * dt
-            self._current_speed += min(speed_diff, max_step)
-        else:
-            max_step = self._cfg.max_decel * dt
-            self._current_speed += max(speed_diff, -max_step)
-        self._current_speed = max(0.0, self._current_speed)
-
-        # ── Stale lane data check ───────────────────────────────
-        lane_age = now - self._lane_stamp
-        if lane_age > 0.5:  # lane_state older than 500ms → stale
-            cte = 0.0
-            heading_error = 0.0
-            using_fallback = True
-
-        # ── PID steering ────────────────────────────────────────
-        # Dead-zone: ignore very small errors (CTE now normalised -1..+1)
-        if abs(cte) < 0.01:
-            cte = 0.0
-        if abs(heading_error) < 0.01:
-            heading_error = 0.0
-
-        # Negate CTE: positive CTE means car is left of center,
-        # so we need negative angular_z (turn right in Gazebo).
-        steer_cte = self._steer_pid.compute(-cte)
-        steer_heading = self._heading_pid.compute(-heading_error)
-        raw_steer = steer_cte + steer_heading
-
-        # Clamp
-        raw_steer = max(-self._cfg.max_steering,
-                        min(self._cfg.max_steering, raw_steer))
-
-        # EMA low-pass filter
-        alpha = self._cfg.steering_alpha
-        self._filtered_steer = (
-            alpha * raw_steer + (1.0 - alpha) * self._filtered_steer
-        )
-
-        # If using fallback (missing lanes) → reduce steering slightly
-        if using_fallback:
-            self._filtered_steer *= 0.7
-
-        # ── Publish Twist ───────────────────────────────────────
-        twist = Twist()
-        twist.linear.x = self._current_speed
-        twist.angular.z = self._filtered_steer
-        self._cmd_pub.publish(twist)
-
-        # ── Periodic logging ────────────────────────────────────
-        if int(now * self._cfg.control_rate_hz) % 50 == 0:
-            self.get_logger().info(
-                f"[{fsm_out.state.name}] "
-                f"v={self._current_speed:.2f}/{target_speed:.2f}  "
-                f"steer={self._filtered_steer:+.3f}  "
-                f"CTE={cte:+.1f}  head={heading_error:+.3f}  "
-                f"tl={tl_colour}"
-            )
-
-    # ================================================================
-    #  LIFECYCLE
-    # ================================================================
-
-    def shutdown(self) -> None:
-        self.get_logger().info(
-            "control_state_node shutting down — sending zero velocity"
-        )
-        try:
-            twist = Twist()
-            self._cmd_pub.publish(twist)
-        except Exception:
+            data = json.loads(msg.data)
+            self._last_detections = data.get("detections", [])
+            self._last_traffic_light = data.get("traffic_light", "unknown")
+            self._last_perception_time = time.monotonic()
+        except (json.JSONDecodeError, TypeError):
             pass
 
+    def _lane_cb(self, msg: String) -> None:
+        try:
+            self._last_lane = json.loads(msg.data)
+        except (json.JSONDecodeError, TypeError):
+            pass
 
+    def _odom_cb(self, msg: Odometry) -> None:
+        self._pos_x = msg.pose.pose.position.x
+        self._pos_y = msg.pose.pose.position.y
+        self._yaw_deg = _quaternion_to_yaw(msg.pose.pose.orientation)
+
+    def _imu_cb(self, msg: Imu) -> None:
+        self._imu_yaw_deg = _quaternion_to_yaw(msg.orientation)
+
+    # ================================================================
+    #  Main control loop (timer callback)
+    # ================================================================
+
+    def _control_loop(self) -> None:
+        now = time.monotonic()
+
+        # ── Check perception freshness ──────────────────────────
+        perception_stale = (
+            now - self._last_perception_time > self._cfg.frame_timeout_sec
+            if self._last_perception_time > 0 else True
+        )
+
+        # Use odometry yaw; fall back to IMU if odom not available
+        yaw = self._yaw_deg if self._yaw_deg != 0.0 else self._imu_yaw_deg
+
+        # ── Update FSM pose ─────────────────────────────────────
+        self._fsm.update_pose(self._pos_x, self._pos_y, yaw)
+
+        # ── Tick the FSM ────────────────────────────────────────
+        if perception_stale:
+            # No perception data — just idle or continue last state
+            detections: List[Dict] = []
+            lane: Dict = {}
+            tl = "unknown"
+        else:
+            detections = self._last_detections
+            lane = self._last_lane
+            tl = self._last_traffic_light
+
+        output: StateOutput = self._fsm.tick(detections, lane, tl)
+
+        # ── Convert FSM output to Twist ─────────────────────────
+        twist = Twist()
+
+        if output.use_lane_keeping:
+            # Use PID lane-centring
+            cte = lane.get("cte", 0.0)
+            cmd: TwistCommand = self._ctrl.compute(
+                target_speed=output.target_speed,
+                lateral_error=cte,
+            )
+            twist.linear.x = cmd.linear_x
+            twist.angular.z = cmd.angular_z
+        else:
+            # Direct speed/steer from FSM
+            twist.linear.x = output.target_speed
+            twist.angular.z = (
+                output.steering_override
+                if output.steering_override is not None
+                else 0.0
+            )
+
+        self._cmd_pub.publish(twist)
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Entry point
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 def main(args=None) -> None:
     rclpy.init(args=args)
     node = ControlStateNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Keyboard interrupt.")
-    except Exception as exc:
-        node.get_logger().fatal(f"Unhandled: {exc}")
+        pass
     finally:
-        node.shutdown()
         node.destroy_node()
         rclpy.shutdown()
 

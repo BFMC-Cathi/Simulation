@@ -6,6 +6,7 @@ from launch_ros.actions import Node as RosNode
 def generate_launch_description():
     world_path = '/home/ros_dev/BFMC_workspace/files/simulation/world.sdf'
     models_path = '/home/ros_dev/BFMC_workspace/files/simulation/models_pkg'
+    track_graph_path = '/home/ros_dev/BFMC_workspace/trackgraph.graphml'
 
     plugin_path = '/home/ros_dev/BFMC_workspace/install/traffic_light_plugin/lib/traffic_light_plugin'
 
@@ -54,7 +55,7 @@ def generate_launch_description():
             ],
         ),
 
-        # ── Control + State Node — FSM + PID → /cmd_vel ──
+        # ── Control + State Node — FSM + PID → /automobile/command ──
         TimerAction(
             period=6.0,
             actions=[
@@ -64,10 +65,15 @@ def generate_launch_description():
                     name='control_state_node',
                     output='screen',
                     parameters=[{
+                        # Track graph
+                        'track_graph_path': track_graph_path,
+                        'nav_source_node': '86',
+                        'nav_target_node': '274',
                         # Speed
                         'cruise_speed': 0.35,
                         'slow_speed': 0.2,
                         'highway_speed': 0.6,
+                        'intersection_speed': 0.25,
                         # PID steering
                         'steering_kp': 0.8,
                         'steering_ki': 0.02,
@@ -80,9 +86,13 @@ def generate_launch_description():
                         'control_rate_hz': 30.0,
                         # FSM
                         'stop_hold_sec': 3.0,
+                        'intersection_stop_sec': 1.5,
+                        'intersection_turn_sec': 2.5,
+                        'intersection_turn_steer': -0.8,
                         'debounce_frames': 3,
                         'frame_timeout_sec': 2.0,
                         'image_height': 480,
+                        'image_width': 640,
                     }],
                 ),
             ],

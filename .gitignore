@@ -71,3 +71,9 @@ files/ros/src/**/__pycache__/
 files/ros/src/**/*.pth
 files/ros/src/**/*.onnx
 files/ros/src/**/*.weights
+
+
+### ========================
+BFMC-MachCore
+vehicle_sim
+VROOM-BFMC-Simulator
