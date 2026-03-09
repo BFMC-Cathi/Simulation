@@ -88,7 +88,11 @@ start_container() {
             -e WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-}" \
             -e XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}" \
             -e QT_X11_NO_MITSHM=1 \
-            -e IGN_GAZEBO_RENDER_ENGINE_GUI=ogre \
+            -e IGN_GAZEBO_RENDER_ENGINE_GUI=ogre2 \
+            -e IGN_GAZEBO_RENDER_ENGINE_SERVER=ogre2 \
+            -e IGN_GAZEBO_RESOURCE_PATH=${WORKSPACE_CONTAINER}/files/simulation/models_pkg \
+            -e SDF_PATH=${WORKSPACE_CONTAINER}/files/simulation/models_pkg \
+            -e IGN_FILE_PATH=${WORKSPACE_CONTAINER}/files/simulation/models_pkg \
             -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
             -v "${WORKSPACE_HOST}:${WORKSPACE_CONTAINER}:rw" \
             -v /dev/dri:/dev/dri \
@@ -105,7 +109,13 @@ build_workspace() {
     info "Installing Python dependencies (ultralytics, opencv) …"
     docker exec -it "${CONTAINER_NAME}" bash -c "
         sudo apt-get update -qq && sudo apt-get install -y -qq python3-pip ros-humble-cv-bridge > /dev/null 2>&1
-        python3 -m pip install --quiet --no-cache-dir ultralytics opencv-python-headless numpy 2>&1 | tail -3
+        # Install ultralytics first (it may pull numpy 2.x)
+        python3 -m pip install --quiet --no-cache-dir ultralytics 2>&1 | tail -3
+        # Install opencv-python-headless WITHOUT deps so it won't upgrade numpy
+        python3 -m pip install --quiet --no-cache-dir --no-deps 'opencv-python-headless<4.11' 2>&1 | tail -3
+        # Force numpy<2 LAST so cv_bridge works
+        python3 -m pip install --quiet --no-cache-dir 'numpy>=1.24,<2' --force-reinstall 2>&1 | tail -3
+        echo \"numpy=\$(python3 -c 'import numpy;print(numpy.__version__)')\"  
     "
     ok "Python dependencies ready."
 
@@ -122,26 +132,13 @@ build_workspace() {
 #  STEP 5 — Launch Gazebo simulation + ROS bridge
 # ═════════════════════════════════════════════════════════════════
 launch_simulation() {
-    info "Launching Gazebo simulation + ROS bridge …"
+    info "Launching Gazebo simulation via sim.sh …"
     docker exec -dit "${CONTAINER_NAME}" bash -c "
-        # Clean Gazebo cache to prevent texture glitches
-        rm -rf ~/.ignition/gazebo/
-
-        # Environment setup
-        export IGN_GAZEBO_RENDER_ENGINE_GUI=ogre
-        export IGN_GAZEBO_RESOURCE_PATH=${WORKSPACE_CONTAINER}/files/simulation/models_pkg
-        export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=${ROS_WS}/install/traffic_light_plugin/lib/traffic_light_plugin
-
-        # Source ROS + workspace
-        source /opt/ros/humble/setup.bash
-        source ${ROS_WS}/install/setup.bash
-
-        # Launch simulation (Gazebo + parameter bridge)
-        ros2 launch car_brain sim_launch.py 2>&1
+        cd ${WORKSPACE_CONTAINER} && bash sim.sh 2>&1
     "
-    ok "Simulation launched in background."
-    info "Waiting 10 seconds for Gazebo to initialise …"
-    sleep 10
+    ok "Simulation launched in background (sim.sh handles unpause)."
+    info "Waiting 15 seconds for Gazebo to initialise + unpause …"
+    sleep 15
 }
 
 # ═════════════════════════════════════════════════════════════════

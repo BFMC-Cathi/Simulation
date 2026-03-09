@@ -10,13 +10,24 @@ def generate_launch_description():
 
     plugin_path = '/home/ros_dev/BFMC_workspace/install/traffic_light_plugin/lib/traffic_light_plugin'
 
+    # Environment that ign gazebo (both server + GUI) needs to find models
+    ign_env = {
+        'IGN_GAZEBO_RESOURCE_PATH': models_path,
+        'IGN_GAZEBO_SYSTEM_PLUGIN_PATH': plugin_path,
+        'SDF_PATH': models_path,
+        'IGN_FILE_PATH': models_path,
+    }
+
     return LaunchDescription([
         SetEnvironmentVariable(name='IGN_GAZEBO_RESOURCE_PATH', value=models_path),
         SetEnvironmentVariable(name='IGN_GAZEBO_SYSTEM_PLUGIN_PATH', value=plugin_path),
+        SetEnvironmentVariable(name='SDF_PATH', value=models_path),
+        SetEnvironmentVariable(name='IGN_FILE_PATH', value=models_path),
 
         ExecuteProcess(
             cmd=['ign', 'gazebo', '-r', '-v', '4', world_path],
             output='screen',
+            additional_env=ign_env,
             # Use '-s' flag for headless: ['ign', 'gazebo', '-r', '-s', '-v', '4', world_path]
         ),
 
@@ -25,7 +36,7 @@ def generate_launch_description():
                  '/automobile/camera/image_raw@sensor_msgs/msg/Image[ignition.msgs.Image',
                  '/automobile/command@geometry_msgs/msg/Twist]ignition.msgs.Twist',
                  '/automobile/IMU@sensor_msgs/msg/Imu[ignition.msgs.IMU',
-                 '/automobile/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry'],
+                 '/model/automobile/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry'],
             output='screen'
         ),
 

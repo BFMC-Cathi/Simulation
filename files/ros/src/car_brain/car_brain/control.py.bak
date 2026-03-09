@@ -1,0 +1,246 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Control Module — Team Cathı / BFMC
+====================================
+Translates the high-level ``StateOutput`` from the state machine into
+smooth, simulation-friendly Twist commands.
+
+Features
+--------
+  • **PID steering controller** — proportional + integral + derivative
+    gains for accurate lane-centring with zero steady-state error.
+  • **Speed ramping** — acceleration and deceleration are clamped to
+    ``max_accel`` / ``max_decel`` so the car accelerates and brakes
+    smoothly (no instantaneous jumps).
+  • **Low-pass filter on steering** — exponential moving average
+    prevents high-frequency oscillation / jitter on the steering axis.
+  • **Dead-zone** — very small errors are zeroed to avoid micro-jitter.
+
+Author : Team Cathı – Bosch Future Mobility Challenge
+License: Apache-2.0
+"""
+
+from __future__ import annotations
+
+import time
+from dataclasses import dataclass
+
+from car_brain.config import DrivingConfig
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Command output
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@dataclass
+class TwistCommand:
+    """Final velocity command sent to the vehicle."""
+    linear_x: float = 0.0   # m/s
+    angular_z: float = 0.0   # rad/s
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  PID Controller (single-axis)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class PIDController:
+    """Discrete PID with anti-windup clamp."""
+
+    def __init__(
+        self,
+        kp: float = 0.0,
+        ki: float = 0.0,
+        kd: float = 0.0,
+        output_min: float = -1.0,
+        output_max: float = 1.0,
+        integrator_max: float = 50.0,
+    ) -> None:
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+        self.output_min = output_min
+        self.output_max = output_max
+        self.integrator_max = integrator_max
+
+        self._integral: float = 0.0
+        self._prev_error: float = 0.0
+        self._prev_time: float = time.monotonic()
+
+    def reset(self) -> None:
+        self._integral = 0.0
+        self._prev_error = 0.0
+        self._prev_time = time.monotonic()
+
+    def compute(self, error: float) -> float:
+        now = time.monotonic()
+        dt = now - self._prev_time
+        if dt <= 0.0:
+            dt = 1e-4
+
+        # Proportional
+        p_term = self.kp * error
+
+        # Integral (with anti-windup clamp)
+        self._integral += error * dt
+        self._integral = max(
+            -self.integrator_max, min(self.integrator_max, self._integral)
+        )
+        i_term = self.ki * self._integral
+
+        # Derivative
+        d_term = self.kd * (error - self._prev_error) / dt
+
+        self._prev_error = error
+        self._prev_time = now
+
+        output = p_term + i_term + d_term
+        return max(self.output_min, min(self.output_max, output))
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Vehicle controller
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class VehicleController:
+    """
+    Converts ``(target_speed, lateral_error, heading_error)`` into a
+    smooth ``TwistCommand``.
+
+    Features (v2 — precision centering):
+      • PID on normalised CTE with proper Ki for zero steady-state error
+      • Heading-error feedforward for angular drift elimination
+      • Tighter dead-zone and more responsive EMA filter
+      • Debug attributes for PID introspection
+
+    Usage::
+
+        ctrl = VehicleController(cfg)
+        cmd = ctrl.compute(target_speed=0.2, lateral_error=15.0,
+                           heading_error=0.02)
+    """
+
+    def __init__(self, cfg: DrivingConfig) -> None:
+        self._cfg = cfg
+
+        # PID for steering (lateral error → angular.z)
+        self._steer_pid = PIDController(
+            kp=cfg.steering_kp,
+            ki=cfg.steering_ki,
+            kd=cfg.steering_kd,
+            output_min=-cfg.max_steering,
+            output_max=cfg.max_steering,
+            integrator_max=2.0,   # tighter anti-windup for normalised ±1 input
+        )
+
+        # ── Smoothing state ─────────────────────────────────────
+        self._current_speed: float = 0.0     # ramped speed
+        self._filtered_steer: float = 0.0    # EMA-filtered steering
+        self._last_time: float = time.monotonic()
+
+        # ── Debug: expose PID internals ─────────────────────────
+        self.dbg_raw_cte: float = 0.0
+        self.dbg_norm_cte: float = 0.0
+        self.dbg_pid_out: float = 0.0
+        self.dbg_heading_ff: float = 0.0
+        self.dbg_integral: float = 0.0
+        self.dbg_filtered_steer: float = 0.0
+
+    def reset(self) -> None:
+        self._steer_pid.reset()
+        self._current_speed = 0.0
+        self._filtered_steer = 0.0
+        self._last_time = time.monotonic()
+
+    def compute(
+        self,
+        target_speed: float,
+        lateral_error: float,
+        heading_error: float = 0.0,
+    ) -> TwistCommand:
+        """
+        Produce a smooth twist command.
+
+        Parameters
+        ----------
+        target_speed : float
+            Desired forward speed (m/s).  May be 0 for a stop.
+        lateral_error : float
+            Pixel offset between desired lane-centre and BEV image
+            centre.  Positive → lane centre is to the right of image
+            centre → car should steer right.
+        heading_error : float
+            Angular offset (radians).  Positive → car heading is
+            clockwise from the lane tangent → steer left to correct.
+
+        Returns
+        -------
+        TwistCommand
+        """
+        now = time.monotonic()
+        dt = now - self._last_time
+        if dt <= 0.0:
+            dt = 1e-4
+        self._last_time = now
+
+        # ── Speed ramping ───────────────────────────────────────
+        speed_diff = target_speed - self._current_speed
+        if speed_diff > 0:
+            max_step = self._cfg.max_accel * dt
+            self._current_speed += min(speed_diff, max_step)
+        else:
+            max_step = self._cfg.max_decel * dt
+            self._current_speed += max(speed_diff, -max_step)
+
+        self._current_speed = max(
+            0.0, min(self._cfg.cruise_speed, self._current_speed)
+        )
+
+        # ── Dead-zone on RAW CTE (pixels) ───────────────────────
+        # Only zero out truly negligible offsets (< 2px ≈ 0.3mm)
+        if abs(lateral_error) < 2.0:
+            lateral_error = 0.0
+
+        self.dbg_raw_cte = lateral_error
+
+        # ── Normalise CTE to roughly ±1.0 ──────────────────────
+        bev_half_w = self._cfg.bev_width / 2.0
+        normalised_error = lateral_error / max(bev_half_w, 1.0)
+        self.dbg_norm_cte = normalised_error
+
+        # ── Steering sign convention ────────────────────────────
+        # CTE > 0 → lane centre is RIGHT of image centre
+        #         → car is LEFT of the lane centre
+        #         → car must steer RIGHT to return to lane
+        #         → angular.z must be NEGATIVE (standard ROS)
+        # PID(positive input) → positive output → positive angular.z
+        #   which is a LEFT turn — WRONG direction.
+        # Fix: negate the error so PID drives angular.z the
+        #   correct way.  Positive CTE → negative PID → right steer.
+        pid_out = self._steer_pid.compute(-normalised_error)
+        self.dbg_pid_out = pid_out
+        self.dbg_integral = self._steer_pid._integral
+
+        # ── Heading feedforward ─────────────────────────────────
+        # heading_error > 0 means car is angled CW relative to lane.
+        # To straighten CW drift the car must steer CCW (left) →
+        # positive angular.z.  But the lane tangent in BEV points
+        # upward (decreasing y), so heading_error > 0 actually means
+        # the lane curves right → we need negative angular.z.
+        # Negate to match the CTE sign fix above.
+        heading_ff = -heading_error * self._cfg.heading_gain
+        self.dbg_heading_ff = heading_ff
+
+        # ── Combine PID + feedforward ───────────────────────────
+        raw_steer = pid_out + heading_ff
+        raw_steer = max(-self._cfg.max_steering,
+                        min(self._cfg.max_steering, raw_steer))
+
+        # ── Low-pass (EMA) filter ───────────────────────────────
+        alpha = self._cfg.steering_alpha
+        self._filtered_steer = (
+            alpha * raw_steer + (1.0 - alpha) * self._filtered_steer
+        )
+        self.dbg_filtered_steer = self._filtered_steer
+
+        return TwistCommand(
+            linear_x=self._current_speed,
+            angular_z=self._filtered_steer,
+        )

@@ -58,7 +58,7 @@ class DrivingConfig:
     # ── ROS topics ──────────────────────────────────────────────
     camera_topic: str = "/automobile/camera/image_raw"
     imu_topic: str = "/automobile/IMU"
-    odom_topic: str = "/automobile/odometry"
+    odom_topic: str = "/model/automobile/odometry"
     cmd_topic: str = "/automobile/command"
     yolo_vis_topic: str = "/perception/debug_image"
     objects_topic: str = "/perception/objects"
@@ -85,21 +85,21 @@ class DrivingConfig:
     sliding_window_min_pix: int = 30
     lane_history_frames: int = 5
 
-    # ── Control — PID ───────────────────────────────────────────
-    steering_kp: float = 1.2
-    steering_ki: float = 0.01
-    steering_kd: float = 0.15
-    max_steering: float = 1.0
-    steering_alpha: float = 0.45
+    # ── Control — PID (not used in VROOM port, kept for compat) ──
+    steering_kp: float = 1.0
+    steering_ki: float = 0.0
+    steering_kd: float = 0.0
+    max_steering: float = 0.5   # rad, Ackermann limit
+    steering_alpha: float = 1.0   # not used
 
-    # ── Control — speed ─────────────────────────────────────────
-    cruise_speed: float = 0.35
-    slow_speed: float = 0.2
+    # ── Control — speed (VROOM: speed = 0.5) ────────────────────
+    cruise_speed: float = 0.5
+    slow_speed: float = 0.3
     stop_speed: float = 0.0
     highway_speed: float = 0.6
-    intersection_speed: float = 0.25
-    max_accel: float = 0.8
-    max_decel: float = 2.0
+    intersection_speed: float = 0.5
+    max_accel: float = 2.0
+    max_decel: float = 4.0
     control_rate_hz: float = 30.0
 
     # ── FSM ─────────────────────────────────────────────────────
@@ -116,7 +116,10 @@ class DrivingConfig:
     crosswalk_threshold: float = 0.45
     roundabout_threshold: float = 0.40
     parking_threshold: float = 0.45
-    single_lane_offset_ratio: float = 0.34
+    single_lane_offset_ratio: float = 0.20
+
+    # ── Control — heading feedforward (not used in VROOM port) ──
+    heading_gain: float = 0.0
 
     # ── Traffic-light HSV ranges ────────────────────────────────
     tl_min_pixel_ratio: float = 0.02

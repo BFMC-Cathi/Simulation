@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Control Module — Team Cathı / BFMC
-====================================
-Translates the high-level ``StateOutput`` from the state machine into
-smooth, simulation-friendly Twist commands.
+Control Module — VROOM-Gazebo Hybrid
+======================================
+Takes the geometric steering angle (degrees) from lane detection and
+converts it smoothly to the Ackermann plugin's angular.z (radians).
 
-Features
---------
-  • **PID steering controller** — proportional + integral + derivative
-    gains for accurate lane-centring with zero steady-state error.
-  • **Speed ramping** — acceleration and deceleration are clamped to
-    ``max_accel`` / ``max_decel`` so the car accelerates and brakes
-    smoothly (no instantaneous jumps).
-  • **Low-pass filter on steering** — exponential moving average
-    prevents high-frequency oscillation / jitter on the steering axis.
-  • **Dead-zone** — very small errors are zeroed to avoid micro-jitter.
+Pipeline:
+  1. Receive angle_deg from lane detection (±25° range)
+  2. NaN/inf guard
+  3. Lightweight EMA (α = 0.35) to damp oscillation
+  4. Linear map: degrees → radians (direct proportional, no VROOM
+     normalizeSteer ±25→±35 re-mapping which was tuned for their
+     physical car — we go straight deg→rad)
+  5. Hard clamp to ±0.5 rad (Ackermann steering_limit)
+
+No PID.  No complex filters.  Just smooth geometric steering.
 
 Author : Team Cathı – Bosch Future Mobility Challenge
 License: Apache-2.0
@@ -23,7 +23,7 @@ License: Apache-2.0
 
 from __future__ import annotations
 
-import time
+import math
 from dataclasses import dataclass
 
 from car_brain.config import DrivingConfig
@@ -40,152 +40,113 @@ class TwistCommand:
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-#  PID Controller (single-axis)
+#  PID Controller (kept for interface compatibility — unused)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 class PIDController:
-    """Discrete PID with anti-windup clamp."""
+    """Placeholder — not used in hybrid port."""
 
-    def __init__(
-        self,
-        kp: float = 0.0,
-        ki: float = 0.0,
-        kd: float = 0.0,
-        output_min: float = -1.0,
-        output_max: float = 1.0,
-        integrator_max: float = 50.0,
-    ) -> None:
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
-        self.output_min = output_min
-        self.output_max = output_max
-        self.integrator_max = integrator_max
+    def __init__(self, kp=0.0, ki=0.0, kd=0.0,
+                 output_min=-1.0, output_max=1.0,
+                 integrator_max=50.0):
+        pass
 
-        self._integral: float = 0.0
-        self._prev_error: float = 0.0
-        self._prev_time: float = time.monotonic()
-
-    def reset(self) -> None:
-        self._integral = 0.0
-        self._prev_error = 0.0
-        self._prev_time = time.monotonic()
+    def reset(self):
+        pass
 
     def compute(self, error: float) -> float:
-        now = time.monotonic()
-        dt = now - self._prev_time
-        if dt <= 0.0:
-            dt = 1e-4
-
-        # Proportional
-        p_term = self.kp * error
-
-        # Integral (with anti-windup clamp)
-        self._integral += error * dt
-        self._integral = max(
-            -self.integrator_max, min(self.integrator_max, self._integral)
-        )
-        i_term = self.ki * self._integral
-
-        # Derivative
-        d_term = self.kd * (error - self._prev_error) / dt
-
-        self._prev_error = error
-        self._prev_time = now
-
-        output = p_term + i_term + d_term
-        return max(self.output_min, min(self.output_max, output))
+        return 0.0
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-#  Vehicle controller
+#  Vehicle controller — smooth geometric steering
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 class VehicleController:
     """
-    Converts ``(target_speed, lateral_error)`` into a smooth ``TwistCommand``.
+    Converts a steering angle in degrees to a smooth Ackermann command.
 
-    Usage::
+    Key design:
+      • EMA (exponential moving average) with α = 0.35 to damp
+        frame-to-frame jitter without adding lag.
+      • Direct deg → rad conversion (π/180), no re-mapping.
+      • Hard clamp to ±0.5 rad (the plugin's steering_limit).
 
-        ctrl = VehicleController(cfg)
-        cmd = ctrl.compute(target_speed=0.2, lateral_error=15.0)
+    The ``lateral_error`` parameter carries the **VROOM-style angle
+    in degrees** (positive = steer right), **not** a pixel offset.
     """
+
+    # EMA smoothing factor.  Higher = more responsive, lower = smoother.
+    _EMA_ALPHA = 0.35
+
+    # Maximum steering output (radians).  Matches AckermannSteering
+    # plugin ``steering_limit`` in the SDF.
+    _MAX_STEER_RAD = 0.5
 
     def __init__(self, cfg: DrivingConfig) -> None:
         self._cfg = cfg
+        self._ema_steer: float = 0.0   # EMA state (radians)
 
-        # PID for steering (lateral error → angular.z)
-        self._steer_pid = PIDController(
-            kp=cfg.steering_kp,
-            ki=cfg.steering_ki,
-            kd=cfg.steering_kd,
-            output_min=-cfg.max_steering,
-            output_max=cfg.max_steering,
-        )
-
-        # ── Smoothing state ─────────────────────────────────────
-        self._current_speed: float = 0.0     # ramped speed
-        self._filtered_steer: float = 0.0    # EMA-filtered steering
-        self._last_time: float = time.monotonic()
+        # ── Debug attributes (control_state_node reads these) ───
+        self.dbg_raw_cte: float = 0.0
+        self.dbg_norm_cte: float = 0.0
+        self.dbg_pid_out: float = 0.0
+        self.dbg_heading_ff: float = 0.0
+        self.dbg_integral: float = 0.0
+        self.dbg_filtered_steer: float = 0.0
 
     def reset(self) -> None:
-        self._steer_pid.reset()
-        self._current_speed = 0.0
-        self._filtered_steer = 0.0
-        self._last_time = time.monotonic()
+        self._ema_steer = 0.0
 
     def compute(
-        self, target_speed: float, lateral_error: float,
+        self,
+        target_speed: float,
+        lateral_error: float,
+        heading_error: float = 0.0,
     ) -> TwistCommand:
         """
-        Produce a smooth twist command.
+        Produce a twist command.
 
         Parameters
         ----------
-        target_speed : float
-            Desired forward speed (m/s).  May be 0 for a stop.
-        lateral_error : float
-            Pixel offset between desired lane-centre and image centre.
-            Positive → car should steer right.
-
-        Returns
-        -------
-        TwistCommand
+        target_speed : Desired forward speed (m/s).
+        lateral_error : Steering angle in **degrees** from lane det.
+        heading_error : Unused (kept for interface compat).
         """
-        now = time.monotonic()
-        dt = now - self._last_time
-        if dt <= 0.0:
-            dt = 1e-4
-        self._last_time = now
+        angle_deg = lateral_error
 
-        # ── Speed ramping ───────────────────────────────────────
-        speed_diff = target_speed - self._current_speed
-        if speed_diff > 0:
-            # Accelerating
-            max_step = self._cfg.max_accel * dt
-            self._current_speed += min(speed_diff, max_step)
-        else:
-            # Decelerating / braking
-            max_step = self._cfg.max_decel * dt
-            self._current_speed += max(speed_diff, -max_step)
+        # ── Guard NaN / inf ─────────────────────────────────────
+        if not math.isfinite(angle_deg):
+            angle_deg = 0.0
 
-        # Clamp
-        self._current_speed = max(
-            0.0, min(self._cfg.cruise_speed, self._current_speed)
-        )
+        # ── Debug (raw) ─────────────────────────────────────────
+        self.dbg_raw_cte = angle_deg
+        self.dbg_heading_ff = 0.0
+        self.dbg_integral = 0.0
 
-        # ── Steering PID ────────────────────────────────────────
-        # Dead-zone: ignore tiny errors (< 2 px) to avoid micro-jitter
-        if abs(lateral_error) < 2.0:
-            lateral_error = 0.0
+        # ── Degrees → radians (direct, no re-mapping) ──────────
+        # CRITICAL: VROOM convention: positive angle = steer RIGHT.
+        # ROS 2 AckermannSteering: positive angular.z = turn LEFT.
+        # We INVERT so that a positive VROOM angle becomes a
+        # negative angular.z (= turn right).
+        steer_raw_rad = -1.0 * angle_deg * (math.pi / 180.0)
 
-        raw_steer = self._steer_pid.compute(lateral_error)
+        # ── Lightweight EMA to smooth oscillation ───────────────
+        alpha = self._EMA_ALPHA
+        self._ema_steer = alpha * steer_raw_rad + (1.0 - alpha) * self._ema_steer
+        steer_rad = self._ema_steer
 
-        # Low-pass (EMA) filter
-        alpha = self._cfg.steering_alpha
-        self._filtered_steer = (
-            alpha * raw_steer + (1.0 - alpha) * self._filtered_steer
-        )
+        # ── Hard clamp ──────────────────────────────────────────
+        steer_rad = max(-self._MAX_STEER_RAD,
+                        min(self._MAX_STEER_RAD, steer_rad))
+
+        # ── Debug ───────────────────────────────────────────────
+        self.dbg_norm_cte = angle_deg / 25.0 if angle_deg != 0 else 0.0
+        self.dbg_pid_out = angle_deg      # "mapped deg" (now just raw deg)
+        self.dbg_filtered_steer = steer_rad
+
+        # ── Speed ───────────────────────────────────────────────
+        speed = max(-1.0, min(1.0, target_speed))
 
         return TwistCommand(
-            linear_x=self._current_speed,
-            angular_z=self._filtered_steer,
+            linear_x=speed,
+            angular_z=steer_rad,
         )

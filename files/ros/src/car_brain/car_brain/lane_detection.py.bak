@@ -1,0 +1,762 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Lane Detection — Bird's-Eye View + Sliding Window  (v3 — Gazebo-tuned)
+========================================================================
+Classical computer-vision lane detection for the BFMC **Gazebo** track
+(white painted lane lines on a dark textured road surface).
+
+Pipeline
+--------
+  1. Crop to ROI (bottom portion of the image where the road is)
+  2. Multi-strategy binary mask:
+       a) Grayscale adaptive threshold (handles variable Gazebo lighting)
+       b) Canny edge detection (catches faint contrast edges)
+       c) Combined via OR for maximum recall
+  3. Perspective transform → Bird's-Eye View (BEV)
+  4. Histogram-based sliding window → find left/right lane pixels
+  5. 2nd-order polynomial fit → smooth lane curves
+  6. Cross-Track Error (CTE) + heading angle → published to control node
+
+The module maintains a short history of polynomial fits so that
+**missing road markings** can be handled via the last-known-good fit
+for up to ``missing_lane_timeout_sec``.
+
+Camera spec (BFMC Gazebo)
+-------------------------
+  640 × 480,  HFOV 1.086 rad (~62°),  15° downward pitch,
+  mounted 20 cm above ground.  Road visible from ~40% to 100% of
+  the image height.
+
+Author : Team Cathı – Bosch Future Mobility Challenge
+License: Apache-2.0
+"""
+
+from __future__ import annotations
+
+import time
+from collections import deque
+from dataclasses import dataclass
+from typing import Deque, List, Optional, Tuple
+
+import cv2
+import numpy as np
+
+from car_brain.config import DrivingConfig
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Result container
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@dataclass
+class LaneState:
+    """Published on ``/perception/lane_state``."""
+    cte: float = 0.0              # cross-track error (pixels, +right)
+    heading_error: float = 0.0    # heading angle error (radians, +CW)
+    left_fit_valid: bool = False
+    right_fit_valid: bool = False
+    both_lanes_valid: bool = False
+    dashed_line: bool = False
+    using_fallback: bool = False   # True when using last-known-good fit
+    timestamp: float = 0.0
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Lane Detector
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class LaneDetector:
+    """
+    Stateful lane detector that converts a raw BGR camera frame into
+    a ``LaneState`` (CTE + heading error) using classical CV only.
+    """
+
+    # ── ROI / BEV ratios (fraction of frame dimensions) ─────────
+    # These define the perspective-transform source trapezoid.
+    # Tuned for BFMC Gazebo camera: 15° pitch, 62° HFOV, 20cm height.
+    #
+    #    TL ───── TR        (top of trapezoid, ~58% down the image)
+    #   /           \
+    #  BL ────────── BR     (bottom of trapezoid, ~98% down)
+    #
+    ROI_TOP_Y   = 0.58   # top edge of trapezoid  (fraction of h)
+    ROI_BOT_Y   = 0.98   # bottom edge            (fraction of h)
+    ROI_TOP_L_X = 0.30   # top-left x             (fraction of w)
+    ROI_TOP_R_X = 0.70   # top-right x            (fraction of w)
+    ROI_BOT_L_X = 0.02   # bottom-left x          (fraction of w)
+    ROI_BOT_R_X = 0.98   # bottom-right x         (fraction of w)
+
+    # ── Minimum valid lane width (pixels in BEV) ────────────────
+    # If both detected "lanes" are closer than this, they are the
+    # SAME physical line seen twice.  Force single-lane fallback.
+    MIN_VALID_LANE_WIDTH_PX = 150
+
+    def __init__(self, cfg: DrivingConfig) -> None:
+        self._cfg = cfg
+
+        # ── Perspective transform matrices ──────────────────────
+        # Will be computed on first frame via _ensure_bev().
+        self._bev_ready = False
+        self._M: np.ndarray = np.eye(3, dtype=np.float32)
+        self._M_inv: np.ndarray = np.eye(3, dtype=np.float32)
+        self._src_pts_for_debug: np.ndarray = np.zeros((4, 2), np.int32)
+
+        # ── Polynomial history for temporal smoothing ───────────
+        self._left_fits: Deque[np.ndarray] = deque(
+            maxlen=cfg.lane_history_frames
+        )
+        self._right_fits: Deque[np.ndarray] = deque(
+            maxlen=cfg.lane_history_frames
+        )
+
+        # ── Last-known-good fit for missing-lane fallback ───────
+        self._last_good_left: Optional[np.ndarray] = None
+        self._last_good_right: Optional[np.ndarray] = None
+        self._last_good_time: float = 0.0
+
+        # ── Warmup: skip first N frames to let camera stabilise ─
+        self._warmup_frames: int = 0
+        self._warmup_threshold: int = 3
+
+        # ── Dynamic lane width (learned from both-lane frames) ──
+        # When both lines are visible we measure the actual pixel
+        # gap and smooth it with an EMA.  When only one line is
+        # visible we use this learned width instead of a hardcoded
+        # offset ratio.  Falls back to DEFAULT_LANE_WIDTH_PX until
+        # the first both-valid frame arrives.
+        self.DEFAULT_LANE_WIDTH_PX: float = 250.0  # sensible BEV default
+        self._dynamic_lane_width: float = self.DEFAULT_LANE_WIDTH_PX
+        self._lane_width_initialised: bool = False
+        self._LANE_WIDTH_EMA_ALPHA: float = 0.15   # slow adaptation
+
+        # ── Debug stats (exposed for logging in the ROS node) ───
+        self.dbg_white_px: int = 0      # white pixels after threshold
+        self.dbg_bev_nonzero: int = 0   # non-zero pixels in BEV
+        self.dbg_lane_width_px: float = self.DEFAULT_LANE_WIDTH_PX
+
+    # ────────────────────────────────────────────────────────────
+    #  BEV initialisation (adaptive to actual frame size)
+    # ────────────────────────────────────────────────────────────
+
+    def _ensure_bev(self, h: int, w: int) -> None:
+        """Compute the perspective-transform once, based on actual frame
+        dimensions.  All points are defined as ratios so they adapt to
+        any resolution."""
+        if self._bev_ready:
+            return
+
+        src = np.float32([
+            [w * self.ROI_TOP_L_X, h * self.ROI_TOP_Y],   # TL
+            [w * self.ROI_TOP_R_X, h * self.ROI_TOP_Y],   # TR
+            [w * self.ROI_BOT_R_X, h * self.ROI_BOT_Y],   # BR
+            [w * self.ROI_BOT_L_X, h * self.ROI_BOT_Y],   # BL
+        ])
+
+        bev_w = self._cfg.bev_width
+        bev_h = self._cfg.bev_height
+        dst = np.float32([
+            [bev_w * 0.10, 0],            # TL
+            [bev_w * 0.90, 0],            # TR
+            [bev_w * 0.90, bev_h],        # BR
+            [bev_w * 0.10, bev_h],        # BL
+        ])
+
+        self._M = cv2.getPerspectiveTransform(src, dst)
+        self._M_inv = cv2.getPerspectiveTransform(dst, src)
+        self._src_pts_for_debug = src.astype(np.int32)
+        # Update config so debug drawing uses the correct trapezoid
+        self._cfg.bev_src_points = src.astype(int).tolist()
+        self._cfg.bev_dst_points = dst.astype(int).tolist()
+        self._bev_ready = True
+
+    # ================================================================
+    #  PUBLIC API
+    # ================================================================
+
+    def process(
+        self, frame: np.ndarray
+    ) -> Tuple[LaneState, Optional[np.ndarray]]:
+        """
+        Run the full lane-detection pipeline on a single BGR frame.
+
+        Returns
+        -------
+        state : LaneState
+            Cross-track error and heading angle.
+        debug_image : np.ndarray | None
+            Annotated debug image (always generated for Gazebo tuning).
+        """
+        state = LaneState(timestamp=time.monotonic())
+        fh, fw = frame.shape[:2]
+        bev_w = self._cfg.bev_width
+        bev_h = self._cfg.bev_height
+
+        # ── Adapt BEV transform to actual frame size (once) ─────
+        self._ensure_bev(fh, fw)
+
+        # 1. Multi-strategy binary mask (threshold + Canny)
+        binary = self._create_lane_mask(frame)
+        self.dbg_white_px = int(np.count_nonzero(binary))
+
+        # 2. Bird's-eye view warp
+        bev = cv2.warpPerspective(binary, self._M, (bev_w, bev_h))
+        self.dbg_bev_nonzero = int(np.count_nonzero(bev))
+
+        # 3. Sliding window search
+        left_x, left_y, right_x, right_y, window_img = (
+            self._sliding_window(bev)
+        )
+
+        # 4. Polynomial fits
+        left_fit = self._fit_poly(left_x, left_y)
+        right_fit = self._fit_poly(right_x, right_y)
+
+        # ── Sanity-check the polynomial fits ────────────────────
+        left_fit = self._validate_fit(left_fit, bev_h, bev_w)
+        right_fit = self._validate_fit(right_fit, bev_h, bev_w)
+
+        # If both detected, left must be to the left of right
+        # AND separated by at least MIN_VALID_LANE_WIDTH_PX.
+        # If the gap is too small, it's the SAME physical line
+        # detected on both sides of the histogram midpoint.
+        if left_fit is not None and right_fit is not None:
+            lx = np.polyval(left_fit, bev_h - 1)
+            rx = np.polyval(right_fit, bev_h - 1)
+            if lx >= rx:
+                # Swapped — both invalid
+                left_fit = None
+                right_fit = None
+            elif (rx - lx) < self.MIN_VALID_LANE_WIDTH_PX:
+                # Same line detected twice — keep the real one,
+                # invalidate the duplicate.
+                mid_x = (lx + rx) / 2.0
+                if mid_x >= bev_w / 2.0:
+                    # Line is on the right side → it's the right lane
+                    left_fit = None
+                else:
+                    # Line is on the left side → it's the left lane
+                    right_fit = None
+
+        now = time.monotonic()
+
+        # ── Warmup: don't trust first few frames ───────────────
+        if self._warmup_frames < self._warmup_threshold:
+            if left_fit is not None or right_fit is not None:
+                self._warmup_frames += 1
+            state.using_fallback = True
+            debug_img = self._draw_debug(
+                frame, bev, window_img, None, None, state
+            )
+            return state, debug_img
+
+        # ── Temporal averaging ──────────────────────────────────
+        if left_fit is not None:
+            self._left_fits.append(left_fit)
+            self._last_good_left = self._average_fit(self._left_fits)
+            state.left_fit_valid = True
+        if right_fit is not None:
+            self._right_fits.append(right_fit)
+            self._last_good_right = self._average_fit(self._right_fits)
+            state.right_fit_valid = True
+
+        if left_fit is not None or right_fit is not None:
+            self._last_good_time = now
+
+        state.both_lanes_valid = (
+            state.left_fit_valid and state.right_fit_valid
+        )
+
+        pixel_count = getattr(self, '_last_center_pixel_count', 999)
+        state.dashed_line = 30 < pixel_count < 800
+
+        # ── Fallback to last-known-good if lanes are lost ───────
+        avg_left = (
+            self._average_fit(self._left_fits)
+            if self._left_fits else None
+        )
+        avg_right = (
+            self._average_fit(self._right_fits)
+            if self._right_fits else None
+        )
+
+        using_fallback = False
+        if avg_left is None and avg_right is None:
+            elapsed = now - self._last_good_time
+            if elapsed < self._cfg.missing_lane_timeout_sec:
+                avg_left = self._last_good_left
+                avg_right = self._last_good_right
+                using_fallback = True
+            else:
+                state.using_fallback = True
+                debug_img = self._draw_debug(
+                    frame, bev, window_img, None, None, state
+                )
+                return state, debug_img
+
+        state.using_fallback = using_fallback
+
+        # 5. Compute CTE and heading from polynomial fits
+        cte, heading = self._compute_errors(
+            avg_left, avg_right, bev_h, bev_w
+        )
+        state.cte = cte
+        state.heading_error = heading
+
+        # 6. Debug visualisation (always generate)
+        debug_img = self._draw_debug(
+            frame, bev, window_img, avg_left, avg_right, state
+        )
+
+        return state, debug_img
+
+    # ================================================================
+    #  PIPELINE STAGES
+    # ================================================================
+
+    def _create_lane_mask(self, frame: np.ndarray) -> np.ndarray:
+        """
+        Multi-strategy lane mask optimised for BFMC Gazebo track.
+
+        Combines:
+          1. **Global threshold** — catches bright white lines
+          2. **Adaptive threshold** — handles uneven Gazebo lighting
+          3. **Canny edges** — catches faint contrast boundaries
+
+        Only the ROI (bottom portion where road is) is processed.
+        """
+        h, w = frame.shape[:2]
+
+        # ── ROI: only process the road portion ──────────────────
+        roi_top = int(h * 0.40)  # road starts ~40% down (with 15° pitch)
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+        # ── Strategy A: Global threshold ────────────────────────
+        # Lower threshold for Gazebo (was 160, now 120)
+        _, global_bin = cv2.threshold(
+            blurred, 120, 255, cv2.THRESH_BINARY
+        )
+
+        # ── Strategy B: Adaptive (Gaussian) threshold ───────────
+        # Very good at handling the variable lighting in Gazebo
+        adaptive_bin = cv2.adaptiveThreshold(
+            blurred, 255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY,
+            blockSize=25,     # neighbourhood size
+            C=-15,            # negative C → only strong bright regions
+        )
+
+        # ── Strategy C: Canny edges ─────────────────────────────
+        canny = cv2.Canny(blurred, 50, 150)
+        # Dilate Canny edges slightly so they merge into thick lines
+        canny = cv2.dilate(canny, np.ones((3, 3), np.uint8), iterations=1)
+
+        # ── Combine: OR of all strategies ───────────────────────
+        combined = cv2.bitwise_or(global_bin, adaptive_bin)
+        combined = cv2.bitwise_or(combined, canny)
+
+        # ── Apply ROI mask (zero out everything above the road) ─
+        combined[:roi_top, :] = 0
+
+        # ── Clean up noise ──────────────────────────────────────
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        combined = cv2.morphologyEx(combined, cv2.MORPH_CLOSE, kernel)
+        combined = cv2.morphologyEx(combined, cv2.MORPH_OPEN, kernel)
+
+        return combined
+
+    def _sliding_window(
+        self, bev: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray,
+               Optional[np.ndarray]]:
+        """
+        Histogram-based sliding window algorithm.
+
+        Returns
+        -------
+        left_x, left_y   : pixel coordinates belonging to the left lane
+        right_x, right_y : pixel coordinates belonging to the right lane
+        window_img        : colourised BEV with window rectangles drawn
+        """
+        h, w = bev.shape[:2]
+        n_windows = self._cfg.sliding_window_count
+        margin = self._cfg.sliding_window_margin
+        min_pix = self._cfg.sliding_window_min_pix
+        win_h = max(1, h // n_windows)
+
+        # Histogram of bottom half to find starting x positions
+        histogram = np.sum(bev[h // 2:, :], axis=0).astype(float)
+        midpoint = w // 2
+
+        # Guard against empty histogram (no white pixels at all)
+        left_hist = histogram[:midpoint]
+        right_hist = histogram[midpoint:]
+        left_base = int(np.argmax(left_hist)) if np.max(left_hist) > 0 else midpoint // 2
+        right_base = (int(np.argmax(right_hist)) + midpoint) if np.max(right_hist) > 0 else midpoint + midpoint // 2
+
+        # ── "Same line twice" guard ─────────────────────────────
+        # When the car drifts onto a line, that line straddles the
+        # histogram midpoint.  Both left_base and right_base lock
+        # onto the same physical line → distance ≈ 0.  Detect this
+        # and discard the weaker (lower-peak) side so that single-
+        # lane fallback takes over.
+        base_gap = abs(right_base - left_base)
+        if base_gap < self.MIN_VALID_LANE_WIDTH_PX:
+            left_peak = left_hist[left_base] if left_base < len(left_hist) else 0.0
+            right_peak = (
+                right_hist[right_base - midpoint]
+                if 0 <= right_base - midpoint < len(right_hist) else 0.0
+            )
+            # Keep the stronger peak (real line), invalidate the weaker.
+            # "Invalidate" = push base to a position where no white
+            # pixels exist → sliding window finds nothing → fit = None.
+            if right_peak >= left_peak:
+                # Real line is on the right side → kill left
+                left_base = midpoint // 4  # far left, likely empty
+            else:
+                # Real line is on the left side → kill right
+                right_base = midpoint + (3 * midpoint) // 2  # far right
+                right_base = min(right_base, w - 1)
+
+        left_current = left_base
+        right_current = right_base
+
+        # Non-zero pixel coordinates
+        nonzero = bev.nonzero()
+        nonzero_y = np.array(nonzero[0])
+        nonzero_x = np.array(nonzero[1])
+
+        left_lane_inds: List[np.ndarray] = []
+        right_lane_inds: List[np.ndarray] = []
+
+        # Always generate debug image for BEV inspection
+        out_img = np.dstack((bev, bev, bev))
+
+        for win_idx in range(n_windows):
+            y_low = h - (win_idx + 1) * win_h
+            y_high = h - win_idx * win_h
+
+            xl_low = max(0, left_current - margin)
+            xl_high = min(w, left_current + margin)
+            xr_low = max(0, right_current - margin)
+            xr_high = min(w, right_current + margin)
+
+            cv2.rectangle(
+                out_img, (xl_low, y_low), (xl_high, y_high),
+                (0, 255, 0), 2
+            )
+            cv2.rectangle(
+                out_img, (xr_low, y_low), (xr_high, y_high),
+                (0, 255, 0), 2
+            )
+
+            good_left = (
+                (nonzero_y >= y_low) & (nonzero_y < y_high)
+                & (nonzero_x >= xl_low) & (nonzero_x < xl_high)
+            ).nonzero()[0]
+
+            good_right = (
+                (nonzero_y >= y_low) & (nonzero_y < y_high)
+                & (nonzero_x >= xr_low) & (nonzero_x < xr_high)
+            ).nonzero()[0]
+
+            left_lane_inds.append(good_left)
+            right_lane_inds.append(good_right)
+
+            if len(good_left) > min_pix:
+                left_current = int(np.mean(nonzero_x[good_left]))
+            if len(good_right) > min_pix:
+                right_current = int(np.mean(nonzero_x[good_right]))
+
+        # Concatenate all found indices
+        left_cat = (
+            np.concatenate(left_lane_inds)
+            if left_lane_inds else np.array([], dtype=int)
+        )
+        right_cat = (
+            np.concatenate(right_lane_inds)
+            if right_lane_inds else np.array([], dtype=int)
+        )
+
+        center_pixel_count = len(left_cat) + len(right_cat)
+        self._last_center_pixel_count = int(center_pixel_count)
+
+        lx = nonzero_x[left_cat] if len(left_cat) > 0 else np.array([])
+        ly = nonzero_y[left_cat] if len(left_cat) > 0 else np.array([])
+        rx = nonzero_x[right_cat] if len(right_cat) > 0 else np.array([])
+        ry = nonzero_y[right_cat] if len(right_cat) > 0 else np.array([])
+
+        # Colour detected pixels
+        if len(left_cat) > 0:
+            out_img[ly, lx] = [255, 0, 0]    # blue = left
+        if len(right_cat) > 0:
+            out_img[ry, rx] = [0, 0, 255]     # red = right
+
+        return lx, ly, rx, ry, out_img
+
+    @staticmethod
+    def _fit_poly(
+        xs: np.ndarray, ys: np.ndarray, min_points: int = 15
+    ) -> Optional[np.ndarray]:
+        """Fit a 2nd-order polynomial ``x = f(y)``. Returns ``None``
+        if too few points."""
+        if len(xs) < min_points:
+            return None
+        try:
+            return np.polyfit(ys, xs, 2)
+        except (np.RankWarning, np.linalg.LinAlgError):
+            return None
+
+    @staticmethod
+    def _average_fit(fits: Deque[np.ndarray]) -> Optional[np.ndarray]:
+        """Average the recent polynomial coefficients for smoothing."""
+        if not fits:
+            return None
+        return np.mean(np.array(list(fits)), axis=0)
+
+    def _validate_fit(
+        self,
+        fit: Optional[np.ndarray],
+        bev_h: int,
+        bev_w: int,
+    ) -> Optional[np.ndarray]:
+        """Reject a polynomial fit whose lane position falls outside
+        the BEV image at key rows."""
+        if fit is None:
+            return None
+        for y in [bev_h - 1, bev_h * 0.5, bev_h * 0.3]:
+            x = np.polyval(fit, y)
+            if x < -bev_w * 0.3 or x > bev_w * 1.3:
+                return None
+        return fit
+
+    # ================================================================
+    #  ERROR COMPUTATION
+    # ================================================================
+
+    def _compute_errors(
+        self,
+        left_fit: Optional[np.ndarray],
+        right_fit: Optional[np.ndarray],
+        bev_h: int,
+        bev_w: int,
+    ) -> Tuple[float, float]:
+        """
+        Compute cross-track error (CTE) and heading angle error from
+        polynomial lane fits in BEV space.
+
+        **Dynamic lane width** — when both lines are visible the actual
+        pixel gap is measured and EMA-filtered.  Single-lane fallback
+        uses half of that learned width instead of a hardcoded ratio.
+
+        **Same-line-twice guard** — if both fits evaluate to nearly the
+        same x-position (gap < MIN_VALID_LANE_WIDTH_PX), they are the
+        same physical line.  We keep only the one whose x is further
+        from the image centre (i.e. the real lane boundary) and apply
+        the single-lane offset.
+
+        CTE sign convention (important!):
+          ``cte = centre_bot - img_cx``
+          Positive -> lane centre is RIGHT of image centre
+                   -> car is too far LEFT -> should steer RIGHT.
+
+        Heading  : tangent angle difference at a look-ahead point
+        """
+        img_cx = bev_w / 2.0
+        y_bottom = float(bev_h - 1)
+        y_lookahead = float(bev_h * 0.5)
+
+        # ── Dynamic single-lane offset (half the learned lane width) ──
+        half_lane = self._dynamic_lane_width / 2.0
+
+        # ── Same-line-twice guard ───────────────────────────────
+        # If both fits exist but evaluate to nearly the same x at
+        # the bottom row, they are the same physical line.  Demote
+        # to single-lane mode.
+        if left_fit is not None and right_fit is not None:
+            lx_check = np.polyval(left_fit, y_bottom)
+            rx_check = np.polyval(right_fit, y_bottom)
+            gap = abs(rx_check - lx_check)
+            if gap < self.MIN_VALID_LANE_WIDTH_PX:
+                # Same physical line — keep the one further from centre
+                mid_x = (lx_check + rx_check) / 2.0
+                if mid_x >= img_cx:
+                    # Line is on the right side of the image
+                    left_fit = None   # invalidate the duplicate
+                else:
+                    # Line is on the left side of the image
+                    right_fit = None  # invalidate the duplicate
+
+        if left_fit is not None and right_fit is not None:
+            left_x_bot = np.polyval(left_fit, y_bottom)
+            right_x_bot = np.polyval(right_fit, y_bottom)
+            centre_bot = (left_x_bot + right_x_bot) / 2.0
+
+            left_x_la = np.polyval(left_fit, y_lookahead)
+            right_x_la = np.polyval(right_fit, y_lookahead)
+            centre_la = (left_x_la + right_x_la) / 2.0
+
+            # ── Update dynamic lane width from measured gap ─────
+            measured_width = abs(right_x_bot - left_x_bot)
+            # Sanity: reject absurd widths (< 80px or > 550px in 640 BEV)
+            if 80.0 < measured_width < bev_w * 0.85:
+                if not self._lane_width_initialised:
+                    self._dynamic_lane_width = measured_width
+                    self._lane_width_initialised = True
+                else:
+                    a = self._LANE_WIDTH_EMA_ALPHA
+                    self._dynamic_lane_width = (
+                        a * measured_width
+                        + (1.0 - a) * self._dynamic_lane_width
+                    )
+            self.dbg_lane_width_px = self._dynamic_lane_width
+
+        elif left_fit is not None:
+            left_x_bot = np.polyval(left_fit, y_bottom)
+            centre_bot = left_x_bot + half_lane
+            left_x_la = np.polyval(left_fit, y_lookahead)
+            centre_la = left_x_la + half_lane
+
+        elif right_fit is not None:
+            right_x_bot = np.polyval(right_fit, y_bottom)
+            centre_bot = right_x_bot - half_lane
+            right_x_la = np.polyval(right_fit, y_lookahead)
+            centre_la = right_x_la - half_lane
+
+        else:
+            return 0.0, 0.0
+
+        # CTE in pixel units — the PID controller normalises this.
+        # Positive cte_px -> lane centre is RIGHT of image centre
+        # -> car is LEFT of lane -> needs to steer RIGHT.
+        cte_px = centre_bot - img_cx
+        cte = max(-bev_w / 2.0, min(bev_w / 2.0, cte_px))
+
+        # Heading error
+        dx = centre_la - centre_bot
+        dy = y_lookahead - y_bottom  # negative
+        heading = float(np.arctan2(dx, -dy)) if abs(dy) > 1e-6 else 0.0
+
+        return float(cte), heading
+
+    # ================================================================
+    #  DEBUG VISUALISATION
+    # ================================================================
+
+    def _draw_debug(
+        self,
+        original: np.ndarray,
+        bev: np.ndarray,
+        window_img: Optional[np.ndarray],
+        left_fit: Optional[np.ndarray],
+        right_fit: Optional[np.ndarray],
+        state: LaneState,
+    ) -> np.ndarray:
+        """
+        Build a 4-panel debug image (2×2 grid):
+
+          ┌──────────────┬──────────────┐
+          │  Original +  │  Binary mask │
+          │  ROI polygon │  (threshold) │
+          ├──────────────┼──────────────┤
+          │  BEV warp +  │  BEV with    │
+          │  lane overlay│  sliding win │
+          └──────────────┴──────────────┘
+
+        This is published to ``/perception/debug_image`` so we can
+        view it in ``rqt_image_view`` or ``ros2 run image_view …``.
+        """
+        bev_h = self._cfg.bev_height
+        bev_w = self._cfg.bev_width
+        h, w = original.shape[:2]
+
+        # Force all panels to same size for easy stacking
+        panel_w, panel_h = w, h
+
+        # ── Panel 1: Original + ROI trapezoid + lane overlay ────
+        overlay = original.copy()
+
+        # Draw filled lane area if both fits exist
+        if left_fit is not None and right_fit is not None:
+            plot_y = np.linspace(0, bev_h - 1, bev_h)
+            left_x_pts = np.polyval(left_fit, plot_y)
+            right_x_pts = np.polyval(right_fit, plot_y)
+
+            pts_left = np.column_stack((left_x_pts, plot_y)).astype(np.int32)
+            pts_right = np.column_stack((right_x_pts, plot_y)).astype(np.int32)
+            pts_all = np.vstack([pts_left, pts_right[::-1]])
+
+            colour_warp = np.zeros((bev_h, bev_w, 3), dtype=np.uint8)
+            cv2.fillPoly(colour_warp, [pts_all], (0, 180, 0))
+            try:
+                unwarped = cv2.warpPerspective(colour_warp, self._M_inv, (w, h))
+                overlay = cv2.addWeighted(overlay, 1.0, unwarped, 0.4, 0.0)
+            except Exception:
+                pass
+
+        # Draw ROI trapezoid
+        cv2.polylines(
+            overlay, [self._src_pts_for_debug], True, (0, 255, 255), 2
+        )
+
+        # Text overlay
+        lines = [
+            f"CTE: {state.cte:+.1f}px  Hdg: {np.degrees(state.heading_error):+.1f}deg",
+            f"L:{state.left_fit_valid} R:{state.right_fit_valid}  "
+            f"White:{self.dbg_white_px} BEV:{self.dbg_bev_nonzero}",
+        ]
+        if state.using_fallback:
+            lines.append("** FALLBACK **")
+
+        for i, line in enumerate(lines):
+            c = (0, 255, 0) if not state.using_fallback else (0, 0, 255)
+            cv2.putText(overlay, line, (8, 20 + i * 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, c, 1,
+                        cv2.LINE_AA)
+
+        panel1 = cv2.resize(overlay, (panel_w, panel_h))
+
+        # ── Panel 2: Binary mask (what the threshold sees) ──────
+        # Re-run the mask on the original to show it
+        binary_vis = self._create_lane_mask(original)
+        panel2 = cv2.resize(
+            cv2.cvtColor(binary_vis, cv2.COLOR_GRAY2BGR),
+            (panel_w, panel_h),
+        )
+        cv2.putText(panel2, "Binary Mask", (8, 20),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+
+        # ── Panel 3: Raw BEV warp ──────────────────────────────
+        bev_colour = cv2.cvtColor(bev, cv2.COLOR_GRAY2BGR)
+        panel3 = cv2.resize(bev_colour, (panel_w, panel_h))
+        cv2.putText(panel3, "BEV Warp", (8, 20),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+
+        # ── Panel 4: BEV + sliding windows + poly curves ────────
+        if window_img is not None:
+            bev_panel = window_img.copy()
+        else:
+            bev_panel = np.dstack((bev, bev, bev))
+
+        if left_fit is not None or right_fit is not None:
+            plot_y = np.linspace(0, bev_h - 1, bev_h)
+            if left_fit is not None:
+                lx_pts = np.polyval(left_fit, plot_y)
+                pts = np.array([np.column_stack((lx_pts, plot_y))], np.int32)
+                cv2.polylines(bev_panel, pts, False, (255, 255, 0), 2)
+            if right_fit is not None:
+                rx_pts = np.polyval(right_fit, plot_y)
+                pts = np.array([np.column_stack((rx_pts, plot_y))], np.int32)
+                cv2.polylines(bev_panel, pts, False, (0, 255, 255), 2)
+
+        panel4 = cv2.resize(bev_panel, (panel_w, panel_h))
+        cv2.putText(panel4, "Sliding Window", (8, 20),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+
+        # ── Compose 2×2 grid ───────────────────────────────────
+        top_row = np.hstack([panel1, panel2])
+        bot_row = np.hstack([panel3, panel4])
+        composite = np.vstack([top_row, bot_row])
+
+        return composite

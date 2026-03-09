@@ -24,6 +24,7 @@ import time
 
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 
@@ -153,17 +154,26 @@ class PerceptionNode(Node):
         })
         self._lane_pub.publish(lane_msg)
 
-        # ── Publish debug image ─────────────────────────────────
-        if self._cfg.publish_visualisation:
-            debug_frame = None
-            if result is not None and result.annotated_frame is not None:
-                debug_frame = result.annotated_frame
-            elif lane_debug is not None:
-                debug_frame = lane_debug
-            if debug_frame is not None:
-                self._debug_pub.publish(
-                    cv2_to_ros_image(debug_frame, stamp=msg.header.stamp)
-                )
+        # ── Aggressive vision debug log ─────────────────────────
+        self.get_logger().info(
+            f"[VISION] Mask Pixels: {self._lane_det.dbg_white_px} | "
+            f"Center Error: {self._lane_det.dbg_center_error:+.1f} | "
+            f"CTE: {lane_state.cte:+.2f} | "
+            f"L: {lane_state.left_fit_valid} R: {lane_state.right_fit_valid} | "
+            f"Fallback: {lane_state.using_fallback}",
+            throttle_duration_sec=0.5,
+        )
+
+        # ── ALWAYS publish debug image (critical for tuning) ────
+        # Prefer the lane-detection 4-panel debug composite;
+        # fall back to YOLO annotated frame.
+        debug_frame = lane_debug  # always generated now
+        if debug_frame is None and result is not None:
+            debug_frame = result.annotated_frame
+        if debug_frame is not None:
+            self._debug_pub.publish(
+                cv2_to_ros_image(debug_frame, stamp=msg.header.stamp)
+            )
 
     # ================================================================
     #  Shutdown
@@ -180,13 +190,19 @@ class PerceptionNode(Node):
 def main(args=None) -> None:
     rclpy.init(args=args)
     node = PerceptionNode()
+    executor = MultiThreadedExecutor(num_threads=3)
+    executor.add_node(node)
     try:
-        rclpy.spin(node)
+        executor.spin()
     except KeyboardInterrupt:
         pass
+    except Exception as exc:
+        node.get_logger().fatal(f"Unhandled exception: {exc}")
     finally:
+        node.get_logger().info("Shutting down PerceptionNode …")
+        executor.shutdown()
         node.destroy_node()
-        rclpy.shutdown()
+        rclpy.try_shutdown()
 
 
 if __name__ == "__main__":
